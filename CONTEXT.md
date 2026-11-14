@@ -77,7 +77,7 @@ Obstacles are not only enemies: drought, a year-long winter and similar. Which o
 | IV · Four Realms | Sovereign → Supreme ruler | Bring all three realms under the crown | T4: numbers and elite gear. 500–1,000+. | Realm-wide famine |
 | Epilogue | Emperor | None. Play continues. | Rebellions, pretenders, Wild hordes | Any |
 
-The act structure, tier axes and sizes are `PROPOSED`.
+The act structure, threat tiers and sizes are `PROPOSED`. The Calamity column is `OWNER` (decided 2026-11-14).
 
 **Standing** `PROPOSED`: one score that threats scale to. It is driven by what the player has built, not by time played.
 
@@ -124,7 +124,7 @@ World creation simulates about 200 years of history and places the results as re
 ### 3.5 Calendar, seasons, calamities
 - One season is 6 Minecraft days. One year is 24 days.
 - Winter: no outdoor crop growth, food use +25%. Spring: growth ×1.25.
-- Calamities roll per realm and are announced a season ahead by omens. Candidates: drought, blight, plague, the Long Winter, flood, failed harvest, mine collapse.
+- Calamities roll per realm and are announced a season ahead by omens. Candidates: drought, blight, plague, the Long Winter, flood, failed harvest, mine collapse. All seven are in scope. `OWNER` (decided 2026-11-14)
 
 ### 3.6 Research
 - Technology is on the owner's sketch. `OWNER`
@@ -237,14 +237,14 @@ Starting values. All `PROPOSED`, all untested. Each must exist as a named consta
 ## 6. Open questions for the owner
 
 1. Final names for realms, rulers and the antagonist.
-2. Which calamity anchors each act.
+2. ~~Which calamity anchors each act.~~ Answered 2026-11-14: the Acts table mapping is accepted as written.
 3. What counts as winning Act IV: conquest only, or any mix of conquest, vassalage and union.
-4. Goals for Open World and Server modes.
-5. Who pays for model calls in Server mode.
+4. Goals for Open World and Server modes. `OPEN`: deferred by the owner 2026-11-14 until those modes are in scope.
+5. Who pays for model calls in Server mode. `OPEN`: deferred with question 4.
 6. The Java group name and whether the mod id stays `riseofempires`.
 7. Whether test-only libraries are acceptable under the no-dependencies preference.
 8. The largest battle size to commit to, after benchmarks exist.
-9. The two inspiration titles that were not captured clearly.
+9. The two inspiration titles that were not captured clearly. `OPEN`: skipped by the owner 2026-11-14; stays open.
 
 ---
 
@@ -266,3 +266,7 @@ Add a line whenever the owner decides something. Newest last.
 | 2026-11-13 | Difficulty scales with progress. Weaker threats stay visible. | Owner |
 | 2026-11-13 | Six hard rules adopted (see `RULES.md` section 1). | Owner |
 | 2026-11-13 | Full system proposal written by Claude at the owner's request. Everything tagged `PROPOSED` awaits review. | Claude |
+| 2026-11-14 | Act-to-calamity mapping accepted as written: I first winter, II drought or blight, III plague or Long Winter, IV realm-wide famine. | Owner |
+| 2026-11-14 | All seven candidate calamities are in scope (drought, blight, plague, Long Winter, flood, failed harvest, mine collapse). | Owner |
+| 2026-11-14 | Open World and Server mode goals deferred. Questions 4 and 5 in section 6 stay open. | Owner |
+| 2026-11-14 | Inspiration titles skipped for now. Section 1 and question 9 stay open. | Owner |
