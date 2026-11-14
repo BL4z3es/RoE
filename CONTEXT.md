@@ -201,11 +201,12 @@ Effects are clamped per category and applied as Ledger events. With no model, te
 ## 4. Technical foundation `PROPOSED`
 
 - **Loader:** Fabric. The owner plays on Fabric.
-- **Version:** pin the latest stable Minecraft release at task M0-1. For reference, Fabric's announcement for Minecraft 26.2 (June 2026) lists Loom 1.17, Loader 0.19.3 and Gradle 9.5.1, with the Loom plugin id `net.fabricmc.fabric-loom` and the game's own unobfuscated names. Fabric's porting notes point to Java 25 support. Check the Fabric develop page for current numbers before pinning.
+- **Pinned at M0-1 (2026-11-14):** Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.166.2+26.3, Loom 1.19.4 (plugin id `net.fabricmc.fabric-loom`), Gradle 9.9.1, Java 25, JUnit 5.11.4 (test only).
+- **Version, as first proposed:** pin the latest stable Minecraft release at task M0-1. For reference, Fabric's announcement for Minecraft 26.2 (June 2026) lists Loom 1.17, Loader 0.19.3 and Gradle 9.5.1, with the Loom plugin id `net.fabricmc.fabric-loom` and the game's own unobfuscated names. Fabric's porting notes point to Java 25 support. Check the Fabric develop page for current numbers before pinning.
 - **Navigation:** a server-side pathfinder built on Minecraft's own navigation classes. Baritone is client-side and is not used.
 - **Storage:** Minecraft's saved-data system plus an append-only event log per world.
 - **Model calls:** the JDK's HTTP client to any OpenAI-compatible endpoint. Async only.
-- **Mod id:** `riseofempires`. Java group: placeholder until M0-1. `OPEN`
+- **Mod id:** `roe`. Java group: `io.github.bl4z3es`. `OWNER` (decided 2026-11-14). Base package: `io.github.bl4z3es.riseofempires`. Data-pack files live under `data/roe/`.
 
 ---
 
@@ -241,8 +242,8 @@ Starting values. All `PROPOSED`, all untested. Each must exist as a named consta
 3. What counts as winning Act IV: conquest only, or any mix of conquest, vassalage and union.
 4. Goals for Open World and Server modes. `OPEN`: deferred by the owner 2026-11-14 until those modes are in scope.
 5. Who pays for model calls in Server mode. `OPEN`: deferred with question 4.
-6. The Java group name and whether the mod id stays `riseofempires`.
-7. Whether test-only libraries are acceptable under the no-dependencies preference.
+6. ~~The Java group name and whether the mod id stays `riseofempires`.~~ Answered 2026-11-14: group `io.github.bl4z3es`, mod id `roe`.
+7. ~~Whether test-only libraries are acceptable under the no-dependencies preference.~~ Answered 2026-11-14: yes, when they are not shipped in the jar.
 8. The largest battle size to commit to, after benchmarks exist.
 9. The two inspiration titles that were not captured clearly. `OPEN`: skipped by the owner 2026-11-14; stays open.
 
@@ -270,3 +271,6 @@ Add a line whenever the owner decides something. Newest last.
 | 2026-11-14 | All seven candidate calamities are in scope (drought, blight, plague, Long Winter, flood, failed harvest, mine collapse). | Owner |
 | 2026-11-14 | Open World and Server mode goals deferred. Questions 4 and 5 in section 6 stay open. | Owner |
 | 2026-11-14 | Inspiration titles skipped for now. Section 1 and question 9 stay open. | Owner |
+| 2026-11-14 | Java group is `io.github.bl4z3es`. Mod id is `roe` (was `riseofempires`). | Owner |
+| 2026-11-14 | Test-only libraries (JUnit 5, Fabric game tests) are allowed. They are not shipped in the jar. | Owner |
+| 2026-11-14 | Asked what "complete alpha" covers, the owner chose "Everything through M5". | Owner |

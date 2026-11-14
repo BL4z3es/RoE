@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "roe-gametest",
+  "version": "0.1.0",
+  "name": "Rise of Empires game tests",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": ["io.github.bl4z3es.riseofempires.gametest.SmokeGameTest"]
+  },
+  "depends": { "roe": "*" }
+}

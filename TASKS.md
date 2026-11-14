@@ -26,20 +26,27 @@ flowchart LR
 
 Goal: an empty mod that builds, runs and has a place for tests.
 
-- [ ] **M0-1 Pin versions.** Ask the owner for the Java group name and confirm the mod id. Look up the current stable Minecraft, Fabric Loader, Fabric API, Loom and Gradle versions on the Fabric develop page. Write them to `gradle.properties` and to `CONTEXT.md` section 4.
+- [x] **M0-1 Pin versions.** Ask the owner for the Java group name and confirm the mod id. Look up the current stable Minecraft, Fabric Loader, Fabric API, Loom and Gradle versions on the Fabric develop page. Write them to `gradle.properties` and to `CONTEXT.md` section 4.
   - Done when: the versions are recorded and the owner has confirmed the group and mod id.
-- [ ] **M0-2 Generate the project.** Create a Fabric mod project from the official template for the pinned version. Split client and common source sets.
+  - Note: Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.166.2+26.3, Loom 1.19.4, Gradle 9.9.1, Java 25. Owner chose group `io.github.bl4z3es` and mod id `roe` on 2026-11-14.
+- [x] **M0-2 Generate the project.** Create a Fabric mod project from the official template for the pinned version. Split client and common source sets.
   - Done when: `./gradlew build` prints `BUILD SUCCESSFUL` and a jar is in `build/libs/`.
-- [ ] **M0-3 Create the package layout** from `CLAUDE.md`: `core/`, `mc/`, `ai/`, with a `package-info.java` in each stating what belongs there.
+  - Note: Written by hand to match the Fabric layout for 26.3 (the GitHub template was not reachable). Client code is in `src/client`. `./gradlew build` passes and produces `build/libs/riseofempires-0.1.0-alpha.jar`.
+- [x] **M0-3 Create the package layout** from `CLAUDE.md`: `core/`, `mc/`, `ai/`, with a `package-info.java` in each stating what belongs there.
   - Done when: the layout exists and `core/` compiles with no Minecraft imports.
-- [ ] **M0-4 Log on start.** The mod logs `[riseofempires] initialised` on server start.
+  - Note: Packages created under `io.github.bl4z3es.riseofempires` with a `package-info.java` each.
+- [~] **M0-4 Log on start.** The mod logs `[riseofempires] initialised` on server start.
   - Done when: `./gradlew runClient` and `./gradlew runServer` both show the line.
-- [ ] **M0-5 Test harness.** Add pure-Java tests for `core/` and in-world game tests. Check with the owner first that a test-only library is acceptable (open question 7).
+  - Note: `runServer` shows the line. `runClient` has not been run: the build machine has no display. The owner needs to run it once before this is ticked.
+- [x] **M0-5 Test harness.** Add pure-Java tests for `core/` and in-world game tests. Check with the owner first that a test-only library is acceptable (open question 7).
   - Done when: `./gradlew test` runs one passing sample test and the game-test task runs one passing sample test. Update the command names in `CLAUDE.md` if they differ.
-- [ ] **M0-6 Guard the core.** Add a build check that fails if anything under `core/` imports a Minecraft class.
+  - Note: JUnit 5 for `core/` (owner approved test-only libraries 2026-11-14) and Fabric game tests in `src/gametest`. Fabric names the game-test task `runGameTest`, not `runGametest`; `CLAUDE.md` still has the old name and is the owner's to change. `build` runs both kinds of test.
+- [x] **M0-6 Guard the core.** Add a build check that fails if anything under `core/` imports a Minecraft class.
   - Done when: adding such an import makes `./gradlew build` fail with a clear message.
-- [ ] **M0-7 Constants home.** Create the single config class for balance numbers and load the values from `CONTEXT.md` section 5 into it.
+  - Note: `checkCoreImports` Gradle task. Verified: a `net.minecraft` import in `core/` fails the build with a `Rule E5 broken` message.
+- [x] **M0-7 Constants home.** Create the single config class for balance numbers and load the values from `CONTEXT.md` section 5 into it.
   - Done when: every row of the numbers table that M1 uses exists as a named constant.
+  - Note: `core/Balance.java` holds every row of the numbers table.
 
 ---
 
@@ -51,12 +58,14 @@ Not in M1: other nations, diplomacy, research, model calls, money, freehand anch
 
 ### Foundation
 
-- [ ] **M1-01 Ledger core.** The `Event` record from `CONTEXT.md` 3.11, an append-only log, cause links, and a query for "what caused this".
+- [x] **M1-01 Ledger core.** The `Event` record from `CONTEXT.md` 3.11, an append-only log, cause links, and a query for "what caused this".
   - Done when: tests show an event chain can be written, reloaded and walked backwards from any event to its roots.
+  - Note: `core/ledger`: Event, EventDraft, Effect, Ref, Place, Ledger with `causeChain` and `roots`. `LedgerTest` writes, reloads and walks a chain.
 - [ ] **M1-02 Persistence.** Save and load the Ledger and all `core/model` records through Minecraft's saved-data system. The event log is an append-only file per world.
   - Done when: a game test saves a world, reloads it and finds identical state.
-- [ ] **M1-03 Calendar and seasons.** In-game days map to seasons and years. A `SeasonChanged` event fires at each boundary.
+- [x] **M1-03 Calendar and seasons.** In-game days map to seasons and years. A `SeasonChanged` event fires at each boundary.
   - Done when: tests cover day-to-season mapping and a season change appears in the Ledger.
+  - Note: `core/sim/Calendar` and `CalendarSystem` (emits `day_started` and `season_changed`). Covered by `SimulationTest`.
 - [ ] **M1-04 `/roe` debug commands.** `/roe time`, `/roe events [n]`, `/roe why <eventId>`.
   - Done when: `/roe why` prints a cause chain in-game.
 

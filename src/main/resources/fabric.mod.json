@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "roe",
+  "version": "${version}",
+  "name": "Rise of Empires",
+  "description": "Minecraft as a grand-strategy game: rise from a collapsed realm to rule four.",
+  "authors": ["BL4z3es"],
+  "license": "All-Rights-Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["io.github.bl4z3es.riseofempires.RiseOfEmpires"],
+    "client": ["io.github.bl4z3es.riseofempires.client.RiseOfEmpiresClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

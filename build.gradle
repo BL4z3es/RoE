@@ -1,0 +1,88 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    mavenCentral()
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        roe {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = 'roe-gametest'
+        enableGameTests = true
+        enableClientGameTests = false
+        eula = true
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // Test-only. Never shipped in the mod jar (rule E20).
+    testImplementation platform("org.junit:junit-bom:${project.junit_version}")
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': inputs.properties.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 25
+    it.options.encoding = 'UTF-8'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// Rule E5: core/ is plain Java. Fails the build if it imports Minecraft, Mojang or Fabric.
+tasks.register('checkCoreImports') {
+    def coreDir = file('src/main/java/io/github/bl4z3es/riseofempires/core')
+    inputs.dir(coreDir)
+    doLast {
+        def banned = ~/^\s*import\s+(static\s+)?(net\.minecraft|com\.mojang|net\.fabricmc)\./
+        def bad = []
+        coreDir.eachFileRecurse { f ->
+            if (f.name.endsWith('.java')) {
+                f.eachLine { line, n -> if (line =~ banned) bad << "${f.path}:${n}: ${line.trim()}" }
+            }
+        }
+        if (!bad.isEmpty()) {
+            throw new GradleException("Rule E5 broken: core/ must not import Minecraft, Mojang or Fabric classes.\n" + bad.join('\n'))
+        }
+    }
+}
+check.dependsOn 'checkCoreImports'
+compileJava.dependsOn 'checkCoreImports'
