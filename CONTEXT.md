@@ -274,3 +274,4 @@ Add a line whenever the owner decides something. Newest last.
 | 2026-11-14 | Java group is `io.github.bl4z3es`. Mod id is `roe` (was `riseofempires`). | Owner |
 | 2026-11-14 | Test-only libraries (JUnit 5, Fabric game tests) are allowed. They are not shipped in the jar. | Owner |
 | 2026-11-14 | Asked what "complete alpha" covers, the owner chose "Everything through M5". | Owner |
+| 2026-11-14 | Asked whether to set aside rule E22 and the playtest gates to reach M5 faster, the owner answered "start and progress orderly". Milestones stay in order: M1 is finished before any M2 work starts. | Owner |
