@@ -150,6 +150,8 @@ Not in M1: other nations, diplomacy, research, model calls, money, freehand anch
 - [ ] **M1-26 Release.** Tag the finished milestone `m1` and push the tag. `.github/workflows/release.yml` builds, tests and publishes the jar as a GitHub release.
   - Done when: the M1 release and its jar are on GitHub.
 
+**Test builds:** `v0.1.0-prealpha` published 2026-11-15 at the owner's request, before M1 is finished: https://github.com/BL4z3es/RoE/releases/tag/v0.1.0-prealpha (Minecraft 1.21.11). Built on GitHub by `.github/workflows/release.yml`; a session triggers it by pushing a one-line tag to `release/upload.txt`.
+
 **M1 playtest notes:** none yet.
 
 ---
