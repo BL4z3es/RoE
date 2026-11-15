@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": { "type": "minecraft:survives_explosion" },
+      "entries": [ { "type": "minecraft:item", "name": "roe:granary_seal" } ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "roe:blocks/granary_seal"
+}
