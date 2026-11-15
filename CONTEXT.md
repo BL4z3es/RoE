@@ -201,7 +201,8 @@ Effects are clamped per category and applied as Ledger events. With no model, te
 ## 4. Technical foundation `PROPOSED`
 
 - **Loader:** Fabric. The owner plays on Fabric.
-- **Pinned at M0-1 (2026-11-14):** Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.166.2+26.3, Loom 1.19.4 (plugin id `net.fabricmc.fabric-loom`), Gradle 9.9.1, Java 25, JUnit 5.11.4 (test only).
+- **Target (owner, 2026-11-15):** Minecraft 1.21.11, Fabric Loader 0.20.1, Fabric API 0.141.6+1.21.11, Java 21. Built with Loom 1.19.4 (plugin id `fabric-loom`, because 1.21.11 ships obfuscated) and Mojang's official mappings, Gradle 9.9.1, JUnit 5.11.4 (test only). `OWNER`
+- **First pinned at M0-1 (2026-11-14):** Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.166.2+26.3, Java 25. Replaced by the line above.
 - **Version, as first proposed:** pin the latest stable Minecraft release at task M0-1. For reference, Fabric's announcement for Minecraft 26.2 (June 2026) lists Loom 1.17, Loader 0.19.3 and Gradle 9.5.1, with the Loom plugin id `net.fabricmc.fabric-loom` and the game's own unobfuscated names. Fabric's porting notes point to Java 25 support. Check the Fabric develop page for current numbers before pinning.
 - **Navigation:** a server-side pathfinder built on Minecraft's own navigation classes. Baritone is client-side and is not used.
 - **Storage:** Minecraft's saved-data system plus an append-only event log per world.
@@ -276,3 +277,5 @@ Add a line whenever the owner decides something. Newest last.
 | 2026-11-14 | Asked what "complete alpha" covers, the owner chose "Everything through M5". | Owner |
 | 2026-11-14 | Asked whether to set aside rule E22 and the playtest gates to reach M5 faster, the owner answered "start and progress orderly". Milestones stay in order: M1 is finished before any M2 work starts. | Owner |
 | 2026-11-15 | The first look of the farm, stable, bunkhouse and Hollow Ruin was rejected. Redesign them from good community builds. | Owner |
+| 2026-11-15 | The mod targets Minecraft 1.21.11 (it was built for 26.3). Fabric Loader stays 0.20.1. | Owner |
+| 2026-11-15 | Each finished milestone is published as a GitHub release with its jar, starting with M1. | Owner |

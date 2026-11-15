@@ -4,13 +4,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 /**
  * The simulation's world state and the deferred block edits, kept in Minecraft's saved-data
- * system ({@code data/roe/world.dat}). Text is stored in pieces because one NBT string holds at
+ * system ({@code data/roe_world.dat}). Text is stored in pieces because one NBT string holds at
  * most 65 535 bytes.
  */
 public final class RoeSavedData extends SavedData {
@@ -23,7 +22,7 @@ public final class RoeSavedData extends SavedData {
     ).apply(i, (state, size, deferred) -> new RoeSavedData(String.join("", state), size, String.join("", deferred))));
 
     public static final SavedDataType<RoeSavedData> TYPE = new SavedDataType<>(
-            Identifier.fromNamespaceAndPath("roe", "world"), RoeSavedData::new, CODEC, null);
+            "roe_world", RoeSavedData::new, CODEC, null);
 
     private String state;
     private long ledgerSize;

@@ -55,8 +55,8 @@ public class CharterItem extends Item {
 
         Settlement owner = Founding.settlementAt(world.state(), RoeWorld.place(level, pos));
         if (owner != null) {
-            player.sendSystemMessage(Component.literal("This land already answers to " + owner.name() + ".")
-                    .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+            player.displayClientMessage(Component.literal("This land already answers to " + owner.name() + ".")
+                    .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC), false);
             return InteractionResult.FAIL;
         }
         String name = player.getName().getString();
@@ -81,8 +81,8 @@ public class CharterItem extends Item {
             ItemStack stack = PlanItem.of(plan);
             if (!player.getInventory().add(stack)) net.minecraft.world.level.block.Block.popResource(level, player.blockPosition(), stack);
         }
-        player.sendSystemMessage(Component.literal("You have founded " + camp.name() + ". Keep the fire lit: tonight, "
-                + "others may see it.").withStyle(ChatFormatting.GOLD));
+        player.displayClientMessage(Component.literal("You have founded " + camp.name() + ". Keep the fire lit: tonight, "
+                + "others may see it.").withStyle(ChatFormatting.GOLD), false);
         return InteractionResult.SUCCESS;
     }
 }

@@ -28,7 +28,7 @@ Goal: an empty mod that builds, runs and has a place for tests.
 
 - [x] **M0-1 Pin versions.** Ask the owner for the Java group name and confirm the mod id. Look up the current stable Minecraft, Fabric Loader, Fabric API, Loom and Gradle versions on the Fabric develop page. Write them to `gradle.properties` and to `CONTEXT.md` section 4.
   - Done when: the versions are recorded and the owner has confirmed the group and mod id.
-  - Note: Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.166.2+26.3, Loom 1.19.4, Gradle 9.9.1, Java 25. Owner chose group `io.github.bl4z3es` and mod id `roe` on 2026-11-14.
+  - Note: Owner chose group `io.github.bl4z3es` and mod id `roe` on 2026-11-14. First pinned to Minecraft 26.3; moved to Minecraft 1.21.11 (Fabric Loader 0.20.1, Fabric API 0.141.6+1.21.11, Java 21, Mojang mappings) at the owner's request on 2026-11-15. Build, unit tests, all 8 game tests and a dedicated-server start pass on 1.21.11.
 - [x] **M0-2 Generate the project.** Create a Fabric mod project from the official template for the pinned version. Split client and common source sets.
   - Done when: `./gradlew build` prints `BUILD SUCCESSFUL` and a jar is in `build/libs/`.
   - Note: Written by hand to match the Fabric layout for 26.3 (the GitHub template was not reachable). Client code is in `src/client`. `./gradlew build` passes and produces `build/libs/riseofempires-0.1.0-alpha.jar`.
@@ -147,6 +147,9 @@ Not in M1: other nations, diplomacy, research, model calls, money, freehand anch
 - [ ] **M1-25 Playtest.** Three people who did not build it play from spawn to the end of winter.
   - Done when: what they said is written below and the owner has decided what to change before M2.
 
+- [ ] **M1-26 Release.** Tag the finished milestone `m1` and push the tag. `.github/workflows/release.yml` builds, tests and publishes the jar as a GitHub release.
+  - Done when: the M1 release and its jar are on GitHub.
+
 **M1 playtest notes:** none yet.
 
 ---
@@ -169,6 +172,7 @@ Tasks are listed at outline level. Break each into M1-sized tasks when M1 is fin
 - [ ] **M2-J Settlement ranks** up to Town. More blueprints.
 - [ ] **M2-K Act II calamity.** Drought or blight, with omens. Needs the owner's choice (open question 2).
 - [ ] **M2-L Performance check, polish, playtest.**
+- [ ] **M2-M Release.** Tag `m2`; the workflow publishes the jar.
 
 **M2 playtest notes:** none yet.
 
@@ -191,6 +195,7 @@ Goal: about 25 hours. Diplomacy, trade and sieges across the heartland. The mode
 - [ ] **M3-K Research: Guild era.**
 - [ ] **M3-L Act III.** The Crown Seat and its calamity.
 - [ ] **M3-M Performance check, polish, playtest.**
+- [ ] **M3-N Release.** Tag `m3`; the workflow publishes the jar.
 
 **M3 playtest notes:** none yet.
 
@@ -209,6 +214,7 @@ Goal: 50 hours and up. The full Known World.
 - [ ] **M4-G Research: Crown era.**
 - [ ] **M4-H Alliance and marriage agreements.**
 - [ ] **M4-I Performance check, polish, playtest.**
+- [ ] **M4-J Release.** Tag `m4`; the workflow publishes the jar.
 
 **M4 playtest notes:** none yet.
 
@@ -222,6 +228,7 @@ Goal: the story can be finished, and play continues after it.
 - [ ] **M5-B Epilogue.** Rebellions, pretenders and Wild hordes after the story ends.
 - [ ] **M5-C Research: Imperial era and repeatable research.** Check law L6: growth must not flatten.
 - [ ] **M5-D Full playthrough test, polish, playtest.**
+- [ ] **M5-E Release.** Tag `m5`; the workflow publishes the jar.
 
 **M5 playtest notes:** none yet.
 

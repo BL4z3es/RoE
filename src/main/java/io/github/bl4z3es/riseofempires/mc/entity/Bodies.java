@@ -37,7 +37,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -236,7 +235,7 @@ public final class Bodies {
             }
             case WORKING -> {
                 t.ticks++;
-                if (t.ticks % 20 == 0) body.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT);
+                if (t.ticks % 20 == 0) body.swing(InteractionHand.MAIN_HAND);
                 double due = w.state().stat(Ref.character(c.id()), Jobs.DUE_HOUR);
                 if (t.ticks >= McTuning.WORK_ACTION_TICKS && w.state().hour() >= due) {
                     onWorkDone(w, level, c, current);
@@ -416,11 +415,11 @@ public final class Bodies {
             body.task.reset();
             body.setItemSlot(EquipmentSlot.MAINHAND, next.equals(Professions.FIGHTER)
                     ? new ItemStack(Items.WOODEN_SWORD) : ItemStack.EMPTY);
-            player.sendSystemMessage(Component.literal(c.name() + " is now " + (next.isEmpty() ? "without work" : "a " + next) + ".")
-                    .withStyle(ChatFormatting.GOLD));
+            player.displayClientMessage(Component.literal(c.name() + " is now " + (next.isEmpty() ? "without work" : "a " + next) + ".")
+                    .withStyle(ChatFormatting.GOLD), false);
             return;
         }
-        player.sendSystemMessage(body.describe(w, w.state().character(c.id())));
+        player.displayClientMessage(body.describe(w, w.state().character(c.id())), false);
     }
 
     /** A body died: the character dies in the simulation, with whoever struck the blow. */

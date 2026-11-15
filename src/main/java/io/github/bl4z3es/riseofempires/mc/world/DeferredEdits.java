@@ -35,7 +35,7 @@ public final class DeferredEdits {
     private final Map<String, List<Edit>> byChunk = new LinkedHashMap<>();
 
     public static void register() {
-        ServerChunkEvents.CHUNK_LOAD.register((level, chunk, generated) -> {
+        ServerChunkEvents.CHUNK_LOAD.register((level, chunk) -> {
             RoeWorld w = RoeWorld.get(level.getServer());
             if (w != null) w.deferred().applyChunk(level, chunk.getPos());
         });
@@ -51,7 +51,7 @@ public final class DeferredEdits {
             apply(level, edit);
             return;
         }
-        byChunk.computeIfAbsent(key(edit.dimension(), ChunkPos.containing(pos)), k -> new ArrayList<>()).add(edit);
+        byChunk.computeIfAbsent(key(edit.dimension(), new ChunkPos(pos)), k -> new ArrayList<>()).add(edit);
     }
 
     public int pending() {
@@ -69,7 +69,7 @@ public final class DeferredEdits {
     }
 
     private static String key(String dimension, ChunkPos pos) {
-        return dimension + "@" + pos.x() + "," + pos.z();
+        return dimension + "@" + pos.x + "," + pos.z;
     }
 
     public String save() {
@@ -83,7 +83,7 @@ public final class DeferredEdits {
         for (String line : text.split("\n")) {
             if (line.isEmpty()) continue;
             Edit e = Edit.decode(line);
-            d.byChunk.computeIfAbsent(key(e.dimension(), ChunkPos.containing(e.pos())), k -> new ArrayList<>()).add(e);
+            d.byChunk.computeIfAbsent(key(e.dimension(), new ChunkPos(e.pos())), k -> new ArrayList<>()).add(e);
         }
         return d;
     }

@@ -75,9 +75,9 @@ public final class RoeWorld {
 
     private static void start(MinecraftServer server) {
         ServerLevel overworld = server.overworld();
-        RoeSavedData data = server.getDataStorage().computeIfAbsent(RoeSavedData.TYPE);
+        RoeSavedData data = server.overworld().getDataStorage().computeIfAbsent(RoeSavedData.TYPE);
         WorldState state;
-        long clockHour = overworld.getOverworldClockTime() / McTuning.TICKS_PER_HOUR;
+        long clockHour = overworld.getDayTime() / McTuning.TICKS_PER_HOUR;
         if (data.state().isEmpty()) {
             state = new WorldState(overworld.getSeed());
             state.setHour(clockHour);
@@ -85,7 +85,7 @@ public final class RoeWorld {
             state = WorldState.load(data.state());
         }
         Ledger ledger = new Ledger();
-        LedgerLog log = new LedgerLog(server.getWorldPath(LevelResource.DATA).resolve("roe").resolve("ledger.log"));
+        LedgerLog log = new LedgerLog(server.getWorldPath(LevelResource.ROOT).resolve("data").resolve("roe").resolve("ledger.log"));
         try {
             log.restoreInto(ledger, data.ledgerSize());
         } catch (IOException e) {
@@ -118,7 +118,7 @@ public final class RoeWorld {
 
     private void tick() {
         ticks++;
-        long target = overworld().getOverworldClockTime() / McTuning.TICKS_PER_HOUR;
+        long target = overworld().getDayTime() / McTuning.TICKS_PER_HOUR;
         long start = System.nanoTime();
         // Always at least one hour when behind; then only while inside the tick budget (rule E9).
         while (sim.state().hour() < target) {
@@ -133,7 +133,7 @@ public final class RoeWorld {
 
     /** True when the simulation clock has caught up with the overworld clock. */
     public boolean caughtUp() {
-        return sim.state().hour() >= overworld().getOverworldClockTime() / McTuning.TICKS_PER_HOUR;
+        return sim.state().hour() >= overworld().getDayTime() / McTuning.TICKS_PER_HOUR;
     }
 
     private void updateEmbodied() {

@@ -62,15 +62,15 @@ public class PlanItem extends Item {
         if (player == null || w == null) return InteractionResult.PASS;
         Blueprint bp = Blueprints.get(blueprintOf(context.getItemInHand()));
         if (bp == null) {
-            player.sendSystemMessage(Component.literal("The plan is smudged past reading.").withStyle(ChatFormatting.GRAY));
+            player.displayClientMessage(Component.literal("The plan is smudged past reading.").withStyle(ChatFormatting.GRAY), false);
             return InteractionResult.FAIL;
         }
         BlockPos clicked = context.getClickedPos();
         BlockPos origin = clicked.offset(-bp.sizeX() / 2, 0, -bp.sizeZ() / 2);
         Settlement s = Founding.settlementAt(w.state(), RoeWorld.place(level, clicked));
         if (s == null) {
-            player.sendSystemMessage(Component.literal("Nobody here would build it: this land answers to no camp of yours.")
-                    .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+            player.displayClientMessage(Component.literal("Nobody here would build it: this land answers to no camp of yours.")
+                    .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC), false);
             return InteractionResult.FAIL;
         }
         String siteId = bp.id() + "-" + (w.sim().ledger().size() + 1);
@@ -83,8 +83,8 @@ public class PlanItem extends Item {
                 .summary(player.getName().getString() + " staked out the " + bp.name() + " at " + origin.getX() + " "
                         + origin.getY() + " " + origin.getZ() + "."));
         context.getItemInHand().shrink(1);
-        player.sendSystemMessage(Component.literal("The " + bp.name() + " is staked out. Builders will need "
-                + ItemCount.describe(bp.totalCost()) + " in the granary.").withStyle(ChatFormatting.GOLD));
+        player.displayClientMessage(Component.literal("The " + bp.name() + " is staked out. Builders will need "
+                + ItemCount.describe(bp.totalCost()) + " in the granary.").withStyle(ChatFormatting.GOLD), false);
         return InteractionResult.SUCCESS;
     }
 }

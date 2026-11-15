@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 
 public class RuinGameTests {
     /** M1-09: the ruin stands, with a lectern to take and the Charter in its chest. */
-    @GameTest(padding = 8)
+    @GameTest
     public void theHollowRuinHoldsTheCharterAndALectern(GameTestHelper h) {
         RoeWorld w = RoeWorld.get(h.getLevel().getServer());
         BlockPos corner = h.absolutePos(new BlockPos(0, 1, 0));

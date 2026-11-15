@@ -51,7 +51,7 @@ public class WorldGameTests {
         h.assertTrue(back.state().equals(w.state().save()), "world state survives the codec");
         h.assertTrue(WorldState.load(back.state()).save().equals(w.state().save()), "world state reloads identically");
 
-        Path log = h.getLevel().getServer().getWorldPath(net.minecraft.world.level.storage.LevelResource.DATA)
+        Path log = h.getLevel().getServer().getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("data")
                 .resolve("roe").resolve("ledger.log");
         h.assertTrue(Files.exists(log), "the event log file exists");
         Ledger reloaded = new Ledger();

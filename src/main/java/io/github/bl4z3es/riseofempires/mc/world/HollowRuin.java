@@ -54,10 +54,10 @@ public final class HollowRuin {
         double angle = Rng.of(w.state().seed(), 0, "hollow_ruin").nextDouble() * Math.PI * 2;
         int x = spawn.getX() + (int) (Math.cos(angle) * McTuning.RUIN_DISTANCE_BLOCKS);
         int z = spawn.getZ() + (int) (Math.sin(angle) * McTuning.RUIN_DISTANCE_BLOCKS);
-        ChunkPos chunk = ChunkPos.containing(new BlockPos(x, 0, z));
+        ChunkPos chunk = new ChunkPos(new BlockPos(x, 0, z));
         w.sim().emit(EventDraft.of(KNOWN).actor(Ref.THE_WORLD)
-                .effect(Effects.setTag(Ref.THE_WORLD, CHUNK_X, String.valueOf(chunk.x())))
-                .effect(Effects.setTag(Ref.THE_WORLD, CHUNK_Z, String.valueOf(chunk.z())))
+                .effect(Effects.setTag(Ref.THE_WORLD, CHUNK_X, String.valueOf(chunk.x)))
+                .effect(Effects.setTag(Ref.THE_WORLD, CHUNK_Z, String.valueOf(chunk.z)))
                 .summary("Long before you came, a waystation of the old empire fell to ruin "
                         + McTuning.RUIN_DISTANCE_BLOCKS + " paces from where you woke. Its keeper hid the Charter there."));
     }
@@ -69,12 +69,12 @@ public final class HollowRuin {
         return new BlockPos(x, y, z);
     }
 
-    private static void onChunkLoad(ServerLevel level, LevelChunk chunk, boolean generated) {
+    private static void onChunkLoad(ServerLevel level, LevelChunk chunk) {
         RoeWorld w = RoeWorld.get(level.getServer());
         if (w == null || level != w.overworld()) return;
         String cx = w.state().tag(Ref.THE_WORLD, CHUNK_X);
-        if (cx.isEmpty() || chunk.getPos().x() != Integer.parseInt(cx)
-                || chunk.getPos().z() != Integer.parseInt(w.state().tag(Ref.THE_WORLD, CHUNK_Z))) return;
+        if (cx.isEmpty() || chunk.getPos().x != Integer.parseInt(cx)
+                || chunk.getPos().z != Integer.parseInt(w.state().tag(Ref.THE_WORLD, CHUNK_Z))) return;
         BlockPos corner = corner(chunk, level);
         if (w.state().tag(Ref.THE_WORLD, BUILT).isEmpty()) build(w, level, corner);
         if (noCampYet(w)) guard(level, corner);
