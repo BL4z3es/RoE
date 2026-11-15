@@ -3,6 +3,7 @@ package io.github.bl4z3es.riseofempires.core.sim;
 import io.github.bl4z3es.riseofempires.core.Balance;
 import io.github.bl4z3es.riseofempires.core.ledger.Event;
 import io.github.bl4z3es.riseofempires.core.ledger.EventDraft;
+import io.github.bl4z3es.riseofempires.core.ledger.Ledger;
 import io.github.bl4z3es.riseofempires.core.ledger.Place;
 import io.github.bl4z3es.riseofempires.core.ledger.Ref;
 import io.github.bl4z3es.riseofempires.core.model.Nation;
@@ -14,6 +15,17 @@ public final class Founding {
     private Founding() {}
 
     public static final String SETTLEMENT_FOUNDED = "settlement_founded";
+    /** Settlement stat: the hour it was founded. */
+    public static final String FOUNDED_HOUR = "founded_hour";
+
+    /** The id of the event that founded this settlement, or 0 if none is recorded. */
+    public static long foundingEvent(Ledger ledger, String settlementId) {
+        Ref ref = Ref.settlement(settlementId);
+        for (Event e : ledger.all()) {
+            if (e.type().equals(SETTLEMENT_FOUNDED) && e.actors().contains(ref)) return e.id();
+        }
+        return 0;
+    }
 
     /** The nation a player rules, or null. */
     public static Nation nationOf(WorldState state, String playerId) {
@@ -50,6 +62,7 @@ public final class Founding {
                 Balance.STARTING_CLAIM_RADIUS_BLOCKS, List.of(), "stock-" + id, Settlement.RANKS.get(0));
         draft.actor(Ref.settlement(id)).actor(Ref.nation(nation.id()))
                 .effect(Effects.putSettlement(camp))
+                .effect(Effects.setStat(Ref.settlement(id), FOUNDED_HOUR, state.hour()))
                 .summary(playerName + " placed the Charter and founded " + camp.name() + ".");
         return sim.emit(draft);
     }
