@@ -98,6 +98,8 @@ public final class Balance {
 
     // Building
     public static final int BUILD_BLOCKS_PER_HOUR = 8;
+    /** Most blocks in one blueprint step: one trip from the granary to the site. */
+    public static final int BLUEPRINT_STEP_BLOCKS = 16;
 
     // Standing, first version (CONTEXT.md section 2)
     public static final double STANDING_POPULATION_WEIGHT = 0.30;

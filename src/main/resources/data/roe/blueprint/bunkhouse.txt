@@ -1,0 +1,97 @@
+# The bunkhouse: four beds under a gabled oak roof on a cobblestone footing. Door to the south,
+# shuttered windows east, west and north.
+name: bunkhouse
+size: 7 8 7
+
+palette:
+C minecraft:cobblestone cost minecraft:cobblestone 1
+O minecraft:oak_planks cost minecraft:oak_log 0.25
+P minecraft:oak_planks cost minecraft:oak_log 0.25
+L minecraft:oak_log cost minecraft:oak_log 1
+X minecraft:oak_log[axis=x] cost minecraft:oak_log 1
+Z minecraft:oak_log[axis=z] cost minecraft:oak_log 1
+B minecraft:brown_bed[facing=north,part=head] cost minecraft:brown_bed 1
+b minecraft:brown_bed[facing=north,part=foot] free
+D minecraft:oak_door[facing=south,half=lower,hinge=left] cost minecraft:oak_door 1
+d minecraft:oak_door[facing=south,half=upper,hinge=left] free
+n minecraft:oak_trapdoor[facing=north,half=bottom,open=true] cost minecraft:oak_log 0.75
+w minecraft:oak_trapdoor[facing=west,half=bottom,open=true] cost minecraft:oak_log 0.75
+e minecraft:oak_trapdoor[facing=east,half=bottom,open=true] cost minecraft:oak_log 0.75
+K minecraft:chest[facing=south] cost minecraft:oak_log 2
+t minecraft:wall_torch[facing=south] cost minecraft:torch 1
+E minecraft:oak_stairs[facing=east] cost minecraft:oak_log 0.375
+V minecraft:oak_stairs[facing=west] cost minecraft:oak_log 0.375
+S minecraft:oak_slab[type=bottom] cost minecraft:oak_log 0.125
+. minecraft:air free
+
+layer:
+CCCCCCC
+COOOOOC
+COOOOOC
+COOOOOC
+COOOOOC
+COOOOOC
+CCCCCCC
+
+layer:
+LPPPPPL
+PB.K.BP
+Pb...bP
+P.....P
+PB...BP
+Pb...bP
+LPPDPPL
+
+layer:
+LPPnPPL
+P.....P
+P.....P
+w.....e
+P.....P
+P.....P
+LPPdPPL
+
+layer:
+LXXXXXL
+Z..t..Z
+Z.....Z
+Z.....Z
+Z.....Z
+Z.....Z
+LXXXXXL
+
+layer:
+EPPPPPV
+EPPPPPV
+EPPPPPV
+EPPPPPV
+EPPPPPV
+EPPPPPV
+EPPPPPV
+
+layer:
+.EPPPV.
+.EPPPV.
+.EPPPV.
+.EPPPV.
+.EPPPV.
+.EPPPV.
+.EPPPV.
+
+layer:
+..EPV..
+..EPV..
+..EPV..
+..EPV..
+..EPV..
+..EPV..
+..EPV..
+
+layer:
+...S...
+...S...
+...S...
+...S...
+...S...
+...S...
+...S...

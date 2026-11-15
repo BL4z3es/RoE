@@ -96,8 +96,9 @@ Not in M1: other nations, diplomacy, research, model calls, money, freehand anch
 
 - [ ] **M1-12 Stockpile.** A Granary Seal marks a storage building. The stockpile is the real contents of its containers.
   - Done when: adding or removing items by hand changes what `/roe stockpile` reports.
-- [ ] **M1-13 Blueprints.** The player places a ghost outline. Builders fetch materials from the stockpile and build it block by block. Ship three: farm, stable, bunkhouse, in the Hollowcrown style.
+- [~] **M1-13 Blueprints.** The player places a ghost outline. Builders fetch materials from the stockpile and build it block by block. Ship three: farm, stable, bunkhouse, in the Hollowcrown style.
   - Done when: all three can be built start to finish by survivors while the player watches, and the owner has approved how the finished buildings look.
+  - Note: Started. Farm (77 blocks, ~14 builder-hours: 38 oak log, 4 torch), stable (gabled stone-brick roof) and bunkhouse (four beds; 97 oak log, 24 cobblestone, 4 brown bed, 1 oak door, 1 torch) are text blueprints in `data/roe/blueprint/`, read and split into steps by `camp/Blueprint`; builders already put up the farm in `BlueprintTest`. Costs are in raw goods (a plank is a quarter log). Preview for the owner: `docs/previews/starter-buildings.png`. Open: ghost outline, block-by-block placement in-world, and the owner's approval of the look.
 - [~] **M1-14 Jobs.** Farmer (till, plant, harvest, deposit), builder (M1-13), gatherer (wood and stone to the stockpile). The player assigns jobs by interacting with a survivor.
   - Done when: an assigned farmer completes a full harvest-and-deposit cycle with no help.
   - Note: Rules done: `camp/Jobs` (farmer, gatherer, builder, fighter) with `nextOrder` / `begin` / `complete` shared by both tiers; `BuildSites` for builders. Open: bodies doing the work and the assign-by-interaction UI.

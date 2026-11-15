@@ -154,7 +154,8 @@ public final class Jobs implements SimSystem {
                 for (BuildSites.Site site : sites) {
                     ItemCount step = site.nextStep();
                     if (stock.count(step.item()) >= step.count()) {
-                        int hours = (step.count() + Balance.BUILD_BLOCKS_PER_HOUR - 1) / Balance.BUILD_BLOCKS_PER_HOUR;
+                        int blocks = site.nextStepBlocks();
+                        int hours = (blocks + Balance.BUILD_BLOCKS_PER_HOUR - 1) / Balance.BUILD_BLOCKS_PER_HOUR;
                         return new WorkOrder(job, STEP_BUILD, Math.max(1, hours), List.of(step), List.of(), site.id(), "");
                     }
                 }

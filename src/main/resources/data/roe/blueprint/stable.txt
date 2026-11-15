@@ -1,0 +1,59 @@
+# The stable: two stalls under a gabled stone-brick roof, open to the south.
+name: stable
+size: 7 6 5
+
+palette:
+C minecraft:cobblestone cost minecraft:cobblestone 1
+D minecraft:coarse_dirt free
+L minecraft:oak_log cost minecraft:oak_log 1
+P minecraft:oak_planks cost minecraft:oak_log 0.25
+f minecraft:oak_fence cost minecraft:oak_log 0.5
+G minecraft:oak_fence_gate[facing=south] cost minecraft:oak_log 1
+H minecraft:hay_block cost minecraft:wheat 9
+N minecraft:stone_brick_stairs[facing=south] cost minecraft:cobblestone 1
+U minecraft:stone_brick_stairs[facing=north] cost minecraft:cobblestone 1
+B minecraft:stone_bricks cost minecraft:cobblestone 1
+S minecraft:stone_brick_slab[type=bottom] cost minecraft:cobblestone 0.5
+. minecraft:air free
+
+layer:
+CCCCCCC
+CDDCDDC
+CDDCDDC
+CDDCDDC
+CCCCCCC
+
+layer:
+LPPLPPL
+PH.f.HP
+P..f..P
+P..f..P
+LGfLGfL
+
+layer:
+LPPLPPL
+P.....P
+P.....P
+P.....P
+L..L..L
+
+layer:
+NNNNNNN
+BPPPPPB
+BPPPPPB
+BPPPPPB
+UUUUUUU
+
+layer:
+.......
+NNNNNNN
+BBBBBBB
+UUUUUUU
+.......
+
+layer:
+.......
+.......
+SSSSSSS
+.......
+.......
