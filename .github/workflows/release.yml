@@ -3,6 +3,9 @@
 # Test builds between milestones use version tags such as v0.1.0-prealpha.
 # A release published by hand on GitHub (Releases > Draft a new release) also gets the jar
 # attached: the workflow builds the tagged commit and uploads to that release.
+# A push that changes release/upload.txt (one line: a release tag) builds that commit and
+# attaches its jar to that release, creating it as a pre-release if needed. Claude sessions use
+# this, because they may push their branch but not tags.
 name: Milestone release
 
 on:
@@ -10,6 +13,10 @@ on:
     tags:
       - 'm[0-9]*'
       - 'v[0-9]*'
+    branches:
+      - 'claude/**'
+    paths:
+      - 'release/upload.txt'
   release:
     types: [published]
 
@@ -22,10 +29,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Loom needs Java 25 to run Gradle; the mod itself is compiled for Java 21.
+      # The last version listed becomes JAVA_HOME.
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: |
+            21
+            25
 
       # Full build: compiles, runs the unit tests and the in-world game tests, and makes the jar.
       - name: Build and test
@@ -35,7 +46,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="${GITHUB_REF_NAME}"
+          if [ "${{ github.event_name }}" = "push" ] && [ "${GITHUB_REF_TYPE}" = "branch" ]; then
+            TAG="$(head -1 release/upload.txt | tr -d '[:space:]')"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
           JAR="$(ls build/libs/*.jar | grep -v -e sources -e dev | head -1)"
           MC="$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)"
           LOADER="$(grep '^loader_version=' gradle.properties | cut -d= -f2)"
@@ -52,12 +67,12 @@ jobs:
 
           See RELEASE_NOTES.md at this tag for what to try and what is known to be missing.
           NOTES
-          if [ "${{ github.event_name }}" = "release" ]; then
+          if [ "${{ github.event_name }}" = "release" ] || gh release view "$TAG" >/dev/null 2>&1; then
             # Published by hand: keep its title and text, attach the jar and the install notes.
             gh release upload "$TAG" "$JAR" --clobber
             if [ -z "$(gh release view "$TAG" --json body --jq .body)" ]; then
               gh release edit "$TAG" --notes-file notes.md
             fi
           else
-            gh release create "$TAG" "$JAR" --title "$TITLE" --notes-file notes.md --prerelease
+            gh release create "$TAG" "$JAR" --title "$TITLE" --notes-file notes.md --prerelease --target "${GITHUB_SHA}"
           fi
