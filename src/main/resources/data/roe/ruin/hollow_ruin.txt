@@ -1,72 +1,120 @@
-# The Hollow Ruin: a fallen waystation of the old empire. The Charter lies in the chest under the
-# collapsed north-east wall; the lectern beside the old shrine still stands. Same format as a
-# blueprint (core/sim/camp/Blueprint.java); costs are unused. Layer 0 replaces the ground surface.
+# The Hollow Ruin: the shell of an old-empire waystation chapel. Built to the usual rules for
+# ruins: decayed blocks peppered through the stone rather than in patches; no two walls the
+# same height; slabs and stairs breaking wall tops; rubble thrown out round the footing;
+# moss, leaves and cobwebs; one tall corner (the old bell tower) and a doorway in the west
+# wall. No light. The Charter lies in the chest in the south-east corner under the cobweb;
+# the shrine's lectern still stands in the middle. '_' leaves the ground as it is.
+# Same format as a blueprint (core/sim/camp/Blueprint.java); costs are unused.
 name: hollow ruin
-size: 11 4 11
+size: 13 6 13
 
 palette:
+_ keep
 S minecraft:stone_bricks free
 M minecraft:mossy_stone_bricks free
 K minecraft:cracked_stone_bricks free
 P minecraft:chiseled_stone_bricks free
 C minecraft:cobblestone free
 m minecraft:mossy_cobblestone free
+A minecraft:andesite free
 G minecraft:gravel free
 w minecraft:stone_brick_wall free
-s minecraft:stone_brick_slab[type=bottom] free
+x minecraft:mossy_stone_brick_wall free
+h minecraft:stone_brick_slab[type=bottom] free
+u minecraft:stone_brick_stairs[facing=south] free
+c minecraft:moss_carpet free
+l minecraft:oak_leaves[persistent=true] free
 W minecraft:cobweb free
 L minecraft:lectern[facing=east] free
 H minecraft:chest[facing=west] free
 . minecraft:air free
 
 layer:
-...CmSSm...
-..mSSKSSm..
-.CSSSSSSSC.
-CSSKSSSMSSm
-mSSSSPSSSSS
-SSMSPPPSKSS
-mSSSSPSSSSC
-CSSKSSSSSMm
-.CSSSSSKSC.
-..mSSGSSm..
-...CmSmC...
+___A____G____
+__G_mC___A_G_
+_mSKSMSSKSSm_
+__SSKSSMSSKG_
+_ASMSSPSSSK__
+__KSGSPPSSS__
+__S_SPPPSMS__
+_GMSSSPSSGSC_
+__SKSSSSMSSm_
+__SSMSSKSSS__
+__mSSKSCSSMA_
+___G__A_m____
+_____G_______
 
 layer:
-...SMKSS...
-..S.....M..
-.K.......S.
-S.........w
-M.........S
-....L......
-K..........
-S.........M
-.S.....H..K
-..M.....S..
-...SKM.S...
+_____________
+__h_c___u____
+__SMKSS.hSK__
+__M......SS__
+_uS.c.....Kl_
+__K.....c.S__
+__....L...M__
+__C.c.....S__
+__S...c...K__
+__.......HS__
+__mhS.h.KS.__
+___h___l_____
+_____________
 
 layer:
-...SM..S...
-..S........
-.K.......S.
-S..........
-M.........S
-...........
-...........
-S.........M
-.S.......WK
-..M........
-...S.......
+_____________
+_____________
+__SK.S...MS__
+__x......SK__
+__S.......Sl_
+__h.......K__
+__........S__
+__C.......M__
+__w.......S__
+__.......WS__
+__......hS.__
+_____________
+_____________
 
 layer:
-....s......
-..s........
-...........
-S..........
-...........
-...........
-...........
-...........
-..........s
-...........
-...........
+_____________
+_____________
+__u.....hSK__
+__.......MS__
+__........S__
+__........M__
+__........S__
+__........h__
+__........w__
+__.......W.__
+__.........__
+_____________
+_____________
+
+layer:
+_____________
+_____________
+__.......SM__
+__.......KS__
+__........M__
+__........h__
+_____________
+_____________
+_____________
+_____________
+_____________
+_____________
+_____________
+
+layer:
+_____________
+_____________
+__.......hP__
+__.......xl__
+_____________
+_____________
+_____________
+_____________
+_____________
+_____________
+_____________
+_____________
+_____________

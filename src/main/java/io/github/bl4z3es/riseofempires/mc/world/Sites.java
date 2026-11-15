@@ -74,6 +74,7 @@ public final class Sites {
             Blueprint.Step step = steps.get(stepIndex);
             for (int i = step.from(); i < step.to(); i++) {
                 Blueprint.Placement p = bp.placements().get(i);
+                if (p.keep()) continue;
                 BlockPos pos = at(origin, p);
                 if (p.blockState().contains("part=foot") || p.blockState().contains("half=upper")) {
                     // Beds and doors place their other half themselves.
@@ -126,7 +127,7 @@ public final class Sites {
                 int shown = 0;
                 for (int i = from; i < bp.placements().size() && shown < 24; i += 3) {
                     Blueprint.Placement p = bp.placements().get(i);
-                    if (p.air()) continue;
+                    if (p.air() || p.keep()) continue;
                     BlockPos pos = at(origin, p);
                     level.sendParticles(ParticleTypes.WAX_ON, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.2, 0.2, 0.2, 0);
                     shown++;

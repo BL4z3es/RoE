@@ -94,6 +94,7 @@ public final class HollowRuin {
         Blueprint ruin = load(level);
         if (ruin == null) return;
         for (Blueprint.Placement p : ruin.placements()) {
+            if (p.keep()) continue;
             BlockPos pos = Sites.at(new Place("", corner.getX(), corner.getY(), corner.getZ()), p);
             level.setBlock(pos, BlockStates.parse(p.blockState()), Block.UPDATE_CLIENTS);
             if (p.y() == 0 && !p.air()) {

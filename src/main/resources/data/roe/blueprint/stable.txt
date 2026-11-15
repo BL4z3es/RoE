@@ -1,59 +1,106 @@
-# The stable: two stalls under a gabled stone-brick roof, open to the south.
+# The stable. Two stalls behind fence gates under a steep slate (stone brick) roof that
+# overhangs the open front and the gable ends. Oak log frame, cobblestone lower walls, a log
+# lintel over the open front, oak barge boards on the gable ends, hay and a feed barrel in each
+# stall. Open to the south.
 name: stable
-size: 7 6 5
+size: 11 8 8
 
 palette:
 C minecraft:cobblestone cost minecraft:cobblestone 1
+m minecraft:mossy_cobblestone cost minecraft:cobblestone 1
 D minecraft:coarse_dirt free
+p minecraft:dirt_path free
 L minecraft:oak_log cost minecraft:oak_log 1
+X minecraft:oak_log[axis=x] cost minecraft:oak_log 1
+Z minecraft:oak_log[axis=z] cost minecraft:oak_log 1
 P minecraft:oak_planks cost minecraft:oak_log 0.25
 f minecraft:oak_fence cost minecraft:oak_log 0.5
 G minecraft:oak_fence_gate[facing=south] cost minecraft:oak_log 1
 H minecraft:hay_block cost minecraft:wheat 9
-N minecraft:stone_brick_stairs[facing=south] cost minecraft:cobblestone 1
-U minecraft:stone_brick_stairs[facing=north] cost minecraft:cobblestone 1
-B minecraft:stone_bricks cost minecraft:cobblestone 1
-S minecraft:stone_brick_slab[type=bottom] cost minecraft:cobblestone 0.5
+R minecraft:barrel[facing=up] cost minecraft:oak_log 1.75
+t minecraft:wall_torch[facing=south] cost minecraft:torch 1
+a minecraft:stone_brick_stairs[facing=south] cost minecraft:cobblestone 1
+b minecraft:stone_brick_stairs[facing=north] cost minecraft:cobblestone 1
+A minecraft:oak_stairs[facing=south] cost minecraft:oak_log 0.375
+B minecraft:oak_stairs[facing=north] cost minecraft:oak_log 0.375
 . minecraft:air free
 
 layer:
-CCCCCCC
-CDDCDDC
-CDDCDDC
-CDDCDDC
-CCCCCCC
+CCmCCCCCCmC
+CCCCCCCCCCC
+CCDDDCDDDCm
+mCDDDCDDDCC
+CCDDDCDDDCC
+CCDDDCDDDCC
+CCCCCCCCCCm
+ppppppppppp
 
 layer:
-LPPLPPL
-PH.f.HP
-P..f..P
-P..f..P
-LGfLGfL
+...........
+.LCCCLCCCL.
+.CHR.C.RHC.
+.C...C...C.
+.C...f...C.
+.C...f...C.
+.LfGfLfGfL.
+...........
 
 layer:
-LPPLPPL
-P.....P
-P.....P
-P.....P
-L..L..L
+...........
+.LPPPLPPPL.
+.P.t.f.t.P.
+.f...f...P.
+.P.......f.
+.P.......P.
+.L...L...L.
+...........
 
 layer:
-NNNNNNN
-BPPPPPB
-BPPPPPB
-BPPPPPB
-UUUUUUU
+...........
+.LXXXLXXXL.
+.Z.......Z.
+.Z.......Z.
+.Z.......Z.
+.Z.......Z.
+.LXXXLXXXL.
+...........
 
 layer:
-.......
-NNNNNNN
-BBBBBBB
-UUUUUUU
-.......
+AaaaaaaaaaA
+.P.......P.
+.P.......P.
+.P.......P.
+.P.......P.
+.P.......P.
+.P.......P.
+BbbbbbbbbbB
 
 layer:
-.......
-.......
-SSSSSSS
-.......
-.......
+...........
+AaaaaaaaaaA
+.P.......P.
+.P.......P.
+.P.......P.
+.P.......P.
+BbbbbbbbbbB
+...........
+
+layer:
+...........
+...........
+AaaaaaaaaaA
+.P.......P.
+.P.......P.
+BbbbbbbbbbB
+...........
+...........
+
+layer:
+...........
+...........
+...........
+AaaaaaaaaaA
+BbbbbbbbbbB
+...........
+...........
+...........

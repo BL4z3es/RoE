@@ -275,3 +275,4 @@ Add a line whenever the owner decides something. Newest last.
 | 2026-11-14 | Test-only libraries (JUnit 5, Fabric game tests) are allowed. They are not shipped in the jar. | Owner |
 | 2026-11-14 | Asked what "complete alpha" covers, the owner chose "Everything through M5". | Owner |
 | 2026-11-14 | Asked whether to set aside rule E22 and the playtest gates to reach M5 faster, the owner answered "start and progress orderly". Milestones stay in order: M1 is finished before any M2 work starts. | Owner |
+| 2026-11-15 | The first look of the farm, stable, bunkhouse and Hollow Ruin was rejected. Redesign them from good community builds. | Owner |

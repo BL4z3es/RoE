@@ -19,6 +19,7 @@ import io.github.bl4z3es.riseofempires.core.sim.Simulation;
  * palette:
  * L minecraft:oak_log cost minecraft:oak_log 1      char, block state, what it costs
  * F minecraft:farmland free                         free: dug or shaped on site
+ * _ keep                                            leave whatever is there (ground, plants)
  *
  * layer:                 one per y, bottom first; layer 0 sits in the ground surface
  * LLLLLLL                one row per z, north first; one char per x, west first
@@ -41,6 +42,11 @@ public record Blueprint(String id, String name, int sizeX, int sizeY, int sizeZ,
         public boolean air() {
             return blockState.equals("minecraft:air");
         }
+
+        /** "Leave whatever is there": nothing is placed and nothing is cleared. */
+        public boolean keep() {
+            return blockState.equals(KEEP);
+        }
     }
 
     /**
@@ -48,6 +54,9 @@ public record Blueprint(String id, String name, int sizeX, int sizeY, int sizeZ,
      * {@code blocks} counts the placements that are not air: clearing air takes no time.
      */
     public record Step(ItemCount cost, int from, int to, int blocks) {}
+
+    /** Palette value meaning "leave this block as it is". */
+    public static final String KEEP = "keep";
 
     public Blueprint {
         placements = List.copyOf(placements);
@@ -74,6 +83,10 @@ public record Blueprint(String id, String name, int sizeX, int sizeY, int sizeZ,
                 else if (section.equals("palette")) {
                     String[] p = line.split("\\s+");
                     if (p[0].length() != 1) throw new IllegalArgumentException("palette key must be one character");
+                    if (p[1].equals(KEEP)) {
+                        palette.put(p[0].charAt(0), new Placement(0, 0, 0, KEEP, "", 0));
+                        continue;
+                    }
                     Placement entry = p[2].equals("free") ? new Placement(0, 0, 0, p[1], "", 0)
                             : new Placement(0, 0, 0, p[1], p[3], Double.parseDouble(p[4]));
                     if (!p[2].equals("free") && !p[2].equals("cost")) throw new IllegalArgumentException("expected cost or free");
@@ -148,7 +161,7 @@ public record Blueprint(String id, String name, int sizeX, int sizeY, int sizeZ,
 
     private int solid(int from, int to) {
         int n = 0;
-        for (int i = from; i < to; i++) if (!placements.get(i).air()) n++;
+        for (int i = from; i < to; i++) if (!placements.get(i).air() && !placements.get(i).keep()) n++;
         return n;
     }
 

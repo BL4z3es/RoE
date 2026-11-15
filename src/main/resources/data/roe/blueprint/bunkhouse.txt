@@ -1,97 +1,164 @@
-# The bunkhouse: four beds under a gabled oak roof on a cobblestone footing. Door to the south,
-# shuttered windows east, west and north.
+# The bunkhouse. Hollowcrown style: an oak log frame on a stone-brick sill and cobblestone
+# plinth, a cobblestone lower course, plank infill above, and a steep 45-degree slate (stone
+# brick) roof with a one-block overhang on every side. Four beds, a tie beam, shuttered windows,
+# a front step, a barrel and log pile under the eaves, oak barge boards on the gable ends and
+# a cobblestone chimney up the north gable. Door to the south.
 name: bunkhouse
-size: 7 8 7
+size: 11 11 9
 
 palette:
 C minecraft:cobblestone cost minecraft:cobblestone 1
+m minecraft:mossy_cobblestone cost minecraft:cobblestone 1
+S minecraft:stone_bricks cost minecraft:cobblestone 1
 O minecraft:oak_planks cost minecraft:oak_log 0.25
 P minecraft:oak_planks cost minecraft:oak_log 0.25
 L minecraft:oak_log cost minecraft:oak_log 1
 X minecraft:oak_log[axis=x] cost minecraft:oak_log 1
 Z minecraft:oak_log[axis=z] cost minecraft:oak_log 1
+f minecraft:oak_fence cost minecraft:oak_log 0.5
 B minecraft:brown_bed[facing=north,part=head] cost minecraft:brown_bed 1
 b minecraft:brown_bed[facing=north,part=foot] free
-D minecraft:oak_door[facing=south,half=lower,hinge=left] cost minecraft:oak_door 1
+D minecraft:oak_door[facing=south,half=lower,hinge=left] cost minecraft:oak_log 0.5
 d minecraft:oak_door[facing=south,half=upper,hinge=left] free
+K minecraft:chest[facing=west] cost minecraft:oak_log 2
+R minecraft:barrel[facing=up] cost minecraft:oak_log 1.75
 n minecraft:oak_trapdoor[facing=north,half=bottom,open=true] cost minecraft:oak_log 0.75
+s minecraft:oak_trapdoor[facing=south,half=bottom,open=true] cost minecraft:oak_log 0.75
 w minecraft:oak_trapdoor[facing=west,half=bottom,open=true] cost minecraft:oak_log 0.75
 e minecraft:oak_trapdoor[facing=east,half=bottom,open=true] cost minecraft:oak_log 0.75
-K minecraft:chest[facing=south] cost minecraft:oak_log 2
 t minecraft:wall_torch[facing=south] cost minecraft:torch 1
-E minecraft:oak_stairs[facing=east] cost minecraft:oak_log 0.375
-V minecraft:oak_stairs[facing=west] cost minecraft:oak_log 0.375
-S minecraft:oak_slab[type=bottom] cost minecraft:oak_log 0.125
+u minecraft:wall_torch[facing=north] cost minecraft:torch 1
+q minecraft:cobblestone_stairs[facing=north] cost minecraft:cobblestone 1
+E minecraft:stone_brick_stairs[facing=east] cost minecraft:cobblestone 1
+V minecraft:stone_brick_stairs[facing=west] cost minecraft:cobblestone 1
+G minecraft:stone_bricks cost minecraft:cobblestone 1
+H minecraft:stone_brick_slab[type=bottom] cost minecraft:cobblestone 0.5
+x minecraft:oak_stairs[facing=east] cost minecraft:oak_log 0.375
+y minecraft:oak_stairs[facing=west] cost minecraft:oak_log 0.375
+o minecraft:oak_planks cost minecraft:oak_log 0.25
+h minecraft:oak_slab[type=bottom] cost minecraft:oak_log 0.125
+c minecraft:cobblestone cost minecraft:cobblestone 1
+k minecraft:mossy_cobblestone cost minecraft:cobblestone 1
+W minecraft:stone_brick_wall cost minecraft:cobblestone 1
 . minecraft:air free
 
 layer:
-CCCCCCC
-COOOOOC
-COOOOOC
-COOOOOC
-COOOOOC
-COOOOOC
-CCCCCCC
+CCmCCCCcmCC
+CSSSSSSSSSm
+mSOOOOOOOSC
+CSOOOOOOOSC
+CSOOOOOOOSm
+CSOOOOOOOSC
+mSOOOOOOOSC
+CSSSSSSSSSC
+CCCqCCmCCCC
 
 layer:
-LPPPPPL
-PB.K.BP
-Pb...bP
-P.....P
-PB...BP
-Pb...bP
-LPPDPPL
+.......c...
+.LCCCLCCCL.
+.CB.....BC.
+.Cb.....bC.
+.LR.....KL.
+.CB.....BC.
+.Cb.....bC.
+.LCDCLCCCL.
+.R.......X.
 
 layer:
-LPPnPPL
-P.....P
-P.....P
-w.....e
-P.....P
-P.....P
-LPPdPPL
+..n.n..k...
+.LPfPLPPPL.
+.P.......Pe
+.P.......f.
+wL.......Le
+.f.......P.
+wP.......P.
+.LPdPLPfPL.
+......s.s..
 
 layer:
-LXXXXXL
-Z..t..Z
-Z.....Z
-Z.....Z
-Z.....Z
-Z.....Z
-LXXXXXL
+.......c...
+.LPPPLPPPL.
+.P...t...P.
+.P.......P.
+.L.......L.
+.P.......P.
+.P...u...P.
+.LPPPLPPPL.
+...........
 
 layer:
-EPPPPPV
-EPPPPPV
-EPPPPPV
-EPPPPPV
-EPPPPPV
-EPPPPPV
-EPPPPPV
+x......c..y
+ELXXXXXXXLV
+EZ.......ZV
+EZ.......ZV
+EZXXXXXXXZV
+EZ.......ZV
+EZ.......ZV
+ELXXXXXXXLV
+x.........y
 
 layer:
-.EPPPV.
-.EPPPV.
-.EPPPV.
-.EPPPV.
-.EPPPV.
-.EPPPV.
-.EPPPV.
+.x.....k.y.
+.EPPPPPPPV.
+.E.......V.
+.E.......V.
+.E.......V.
+.E.......V.
+.E.......V.
+.EPPPPPPPV.
+.x.......y.
 
 layer:
-..EPV..
-..EPV..
-..EPV..
-..EPV..
-..EPV..
-..EPV..
-..EPV..
+..x....cy..
+..EPPfPPV..
+..E.....V..
+..E.....V..
+..E.....V..
+..E.....V..
+..E.....V..
+..EPPfPPV..
+..x.....y..
 
 layer:
-...S...
-...S...
-...S...
-...S...
-...S...
-...S...
-...S...
+...x...c...
+...EPPPV...
+...E...V...
+...E...V...
+...E...V...
+...E...V...
+...E...V...
+...EPPPV...
+...x...y...
+
+layer:
+....xoyc...
+....EGV....
+....EGV....
+....EGV....
+....EGV....
+....EGV....
+....EGV....
+....EGV....
+....xoy....
+
+layer:
+.....h.W...
+.....H.....
+.....H.....
+.....H.....
+.....H.....
+.....H.....
+.....H.....
+.....H.....
+.....h.....
+
+layer:
+.......W...
+...........
+...........
+...........
+...........
+...........
+...........
+...........
+...........

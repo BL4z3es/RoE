@@ -1,42 +1,54 @@
-# The farm: a 5x5 wheat plot round a well-spring, fenced in oak, Hollowcrown style.
-# Format: see core/sim/camp/Blueprint.java. Rows are z (north first), columns are x (west first).
-# Layer 0 sits in the ground surface; the entrance faces south.
+# The farm. Two 3x4 wheat beds either side of an irrigation ditch (24 crops, one farmer's plot),
+# framed by a log kerb, inside an oak fence on log posts with torches on the corners. A
+# walkway runs along the front from the gate; composters stand at the back corners and a
+# barrel by the gate. Gate to the south.
 name: farm
-size: 7 3 7
+size: 11 3 9
 
 palette:
-L minecraft:oak_log cost minecraft:oak_log 1
+D minecraft:coarse_dirt free
+P minecraft:dirt_path free
 F minecraft:farmland free
 W minecraft:water free
-P minecraft:dirt_path free
+X minecraft:oak_log[axis=x] cost minecraft:oak_log 1
+Z minecraft:oak_log[axis=z] cost minecraft:oak_log 1
+L minecraft:oak_log cost minecraft:oak_log 1
 f minecraft:oak_fence cost minecraft:oak_log 0.5
 G minecraft:oak_fence_gate[facing=south] cost minecraft:oak_log 1
+C minecraft:composter cost minecraft:oak_log 1
+R minecraft:barrel[facing=up] cost minecraft:oak_log 1.75
 T minecraft:torch cost minecraft:torch 1
 . minecraft:air free
 
 layer:
-LLLLLLL
-LFFFFFL
-LFFFFFL
-LFFWFFL
-LFFFFFL
-LFFFFFL
-LLLPLLL
+DDDDDDDDDDD
+DXXXXXXXXXD
+DZFFFWFFFZD
+DZFFFWFFFZD
+DZFFFWFFFZD
+DZFFFWFFFZD
+DXXXXXXXXXD
+DPPPPPPPPPD
+DDDDDPDDDDD
 
 layer:
-LfffffL
-f.....f
-f.....f
-f.....f
-f.....f
-f.....f
-LffGffL
+LffffLffffL
+fC.......Cf
+f.........f
+f.........f
+L.........L
+f.........f
+f.........f
+fR........f
+LffffGffffL
 
 layer:
-T.....T
-.......
-.......
-.......
-.......
-.......
-T.....T
+T....T....T
+...........
+...........
+...........
+T.........T
+...........
+...........
+...........
+T.........T
