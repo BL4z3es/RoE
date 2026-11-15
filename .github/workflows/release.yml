@@ -1,6 +1,8 @@
 # Publishes a GitHub release with the mod jar when a release tag is pushed.
 # The owner asked for one release after every milestone (2026-11-15): tags m1, m2, m3 ...
 # Test builds between milestones use version tags such as v0.1.0-prealpha.
+# A release published by hand on GitHub (Releases > Draft a new release) also gets the jar
+# attached: the workflow builds the tagged commit and uploads to that release.
 name: Milestone release
 
 on:
@@ -8,6 +10,8 @@ on:
     tags:
       - 'm[0-9]*'
       - 'v[0-9]*'
+  release:
+    types: [published]
 
 permissions:
   contents: write
@@ -48,4 +52,12 @@ jobs:
 
           See RELEASE_NOTES.md at this tag for what to try and what is known to be missing.
           NOTES
-          gh release create "$TAG" "$JAR" --title "$TITLE" --notes-file notes.md --prerelease
+          if [ "${{ github.event_name }}" = "release" ]; then
+            # Published by hand: keep its title and text, attach the jar and the install notes.
+            gh release upload "$TAG" "$JAR" --clobber
+            if [ -z "$(gh release view "$TAG" --json body --jq .body)" ]; then
+              gh release edit "$TAG" --notes-file notes.md
+            fi
+          else
+            gh release create "$TAG" "$JAR" --title "$TITLE" --notes-file notes.md --prerelease
+          fi
