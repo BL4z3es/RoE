@@ -1,5 +1,7 @@
 {
   "item.roe.charter": "Charter",
+  "item.roe.plan": "Plan",
   "block.roe.granary_seal": "Granary Seal",
-  "entity.roe.person": "Person"
+  "entity.roe.person": "Person",
+  "entity.roe.barbarian": "Raider"
 }

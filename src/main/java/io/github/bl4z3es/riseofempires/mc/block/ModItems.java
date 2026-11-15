@@ -27,6 +27,9 @@ public final class ModItems {
     public static final Item CHARTER = Registry.register(BuiltInRegistries.ITEM, itemKey("charter"),
             new CharterItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE).setId(itemKey("charter"))));
 
+    public static final Item PLAN = Registry.register(BuiltInRegistries.ITEM, itemKey("plan"),
+            new PlanItem(new Item.Properties().stacksTo(1).setId(itemKey("plan"))));
+
     /** Forces the fields above to load during mod initialisation. */
     public static void register() {}
 

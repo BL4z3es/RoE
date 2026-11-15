@@ -32,6 +32,9 @@ public class CharterItem extends Item {
         super(properties);
     }
 
+    /** The plans the founder receives with their camp. */
+    public static final List<String> STARTER_PLANS = List.of("farm", "stable", "bunkhouse");
+
     /** A written book's title holds at most this many characters. */
     private static final int MAX_TITLE = 32;
 
@@ -73,6 +76,11 @@ public class CharterItem extends Item {
         LecternBlock.tryPlaceBook(player, level, pos, state, book);
         context.getItemInHand().shrink(1);
         Tent.raise(level, pos, founded.id());
+        // The starter kits (CONTEXT.md section 2): one plan each for a farm, a stable and a bunkhouse.
+        for (String plan : STARTER_PLANS) {
+            ItemStack stack = PlanItem.of(plan);
+            if (!player.getInventory().add(stack)) net.minecraft.world.level.block.Block.popResource(level, player.blockPosition(), stack);
+        }
         player.sendSystemMessage(Component.literal("You have founded " + camp.name() + ". Keep the fire lit: tonight, "
                 + "others may see it.").withStyle(ChatFormatting.GOLD));
         return InteractionResult.SUCCESS;

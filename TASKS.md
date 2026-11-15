@@ -61,55 +61,62 @@ Not in M1: other nations, diplomacy, research, model calls, money, freehand anch
 - [x] **M1-01 Ledger core.** The `Event` record from `CONTEXT.md` 3.11, an append-only log, cause links, and a query for "what caused this".
   - Done when: tests show an event chain can be written, reloaded and walked backwards from any event to its roots.
   - Note: `core/ledger`: Event, EventDraft, Effect, Ref, Place, Ledger with `causeChain` and `roots`. `LedgerTest` writes, reloads and walks a chain.
-- [ ] **M1-02 Persistence.** Save and load the Ledger and all `core/model` records through Minecraft's saved-data system. The event log is an append-only file per world.
+- [x] **M1-02 Persistence.** Save and load the Ledger and all `core/model` records through Minecraft's saved-data system. The event log is an append-only file per world.
   - Done when: a game test saves a world, reloads it and finds identical state.
+  - Note: `mc/world/RoeWorld` + `RoeSavedData` (world state and deferred edits in saved data, split into pieces under the 64 KB NBT string limit) + `LedgerLog` (`data/roe/ledger.log`, written by a background thread, cut back to the last save on load). Game test `saveAndReloadGiveIdenticalState` checks the codec and the log give back identical state.
 - [x] **M1-03 Calendar and seasons.** In-game days map to seasons and years. A `SeasonChanged` event fires at each boundary.
   - Done when: tests cover day-to-season mapping and a season change appears in the Ledger.
   - Note: `core/sim/Calendar` and `CalendarSystem` (emits `day_started` and `season_changed`). Covered by `SimulationTest`.
-- [ ] **M1-04 `/roe` debug commands.** `/roe time`, `/roe events [n]`, `/roe why <eventId>`.
+- [x] **M1-04 `/roe` debug commands.** `/roe time`, `/roe events [n]`, `/roe why <eventId>`.
   - Done when: `/roe why` prints a cause chain in-game.
+  - Note: `/roe time`, `/roe events [n]`, `/roe why <id>` (indented cause chain), plus `/roe settlement`, `/roe stockpile`, `/roe standing`, `/roe stats <ref>` and `/roe give charter` (operators). Checked by compiling against 26.3; not yet tried by hand in a client.
 
 ### People and places
 
 - [x] **M1-05 Character records.** Name, trait, want, profession, memories, needs. Persistent and independent of any entity.
   - Done when: tests create, save and reload a character with every field intact.
   - Note: `core/model/Character` (name, trait, want, profession, memories, settlement, status); needs live in the per-character stat store. `SimulationTest` saves and reloads one with every field intact.
-- [ ] **M1-06 Settlement record and claim.** A settlement has a centre, a claim radius, a population list and a stockpile reference.
+- [x] **M1-06 Settlement record and claim.** A settlement has a centre, a claim radius, a population list and a stockpile reference.
   - Done when: `/roe settlement` shows the settlement the player is standing in.
-- [ ] **M1-07 Embodied characters.** A server-side entity bound to a character record. It walks, carries items and uses containers. When it unloads, the record stays.
+  - Note: `Settlement` record and `Founding.settlementAt`; `/roe settlement` shows the claim the player stands in.
+- [~] **M1-07 Embodied characters.** A server-side entity bound to a character record. It walks, carries items and uses containers. When it unloads, the record stays.
   - Done when: a game test spawns a character out of sight, has it walk a path and place an item in a chest, then unloads and reloads it with the same identity.
+  - Note: `roe:person` (player model, own skin, name tag, held item) bound to a character id; not saved with chunks, so `mc/entity/Bodies` gives each resident one body while the camp is watched and removes it out of sight. Game test: a body walks to a spot and a new body for the same id is the same person. Open: an in-client look, and a body putting an item in a real chest (stock moves through the Granary sync instead, see M1-12).
 - [~] **M1-08 Seasonal farming.** Crop growth obeys the season: none in winter, faster in spring.
   - Done when: a game test shows no outdoor growth in winter.
-  - Note: Rules done: `camp/Farming.growthMultiplier` (winter outdoors 0, spring 1.25), tested in `JobsTest`. Open: the in-world game test on real crop blocks.
+  - Note: Rules done (`camp/Farming`). Real wheat on a built farm is planted and harvested by the farmer's body and shows the rules' growth stage (`mc/world/Upkeep`). Open: the in-world winter game test.
 
 ### The opening
 
 - [ ] **M1-09 The Hollow Ruin.** A hand-built structure placed by world generation near spawn in the starting region, guarded by weak raiders, holding the Charter. Build it to the L1 quality bar.
   - Done when: a fresh world has one reachable Hollow Ruin within a set distance of spawn, and the owner has approved how it looks.
-- [ ] **M1-10 The Charter.** An item found in the ruin. Placing it on a lectern founds the camp: a `SettlementFounded` event, a claim, a tent and a campfire.
+- [x] **M1-10 The Charter.** An item found in the ruin. Placing it on a lectern founds the camp: a `SettlementFounded` event, a claim, a tent and a campfire.
   - Done when: founding works once per player, is recorded in the Ledger and survives a reload.
+  - Note: `roe:charter` on an empty lectern: `Founding.found`, the lectern takes a written Charter, a canvas tent with a bed and a campfire go up block by block, and the founder receives three Plans (farm, stable, bunkhouse). Game test covers once-only founding; a second Charter inside a claim says which camp owns the land.
 - [~] **M1-11 The first night.** On the first night after founding, three survivors walk in from beyond sight and ask to stay. Each has a name, a trait, a want and a memory.
   - Done when: they arrive on foot from out of view, never spawn in sight, and their arrival has a cause in the Ledger.
-  - Note: Rules done: `camp/Survivors` sends three at the first nightfall after founding, each with name, trait, want and memory from `SurvivorTables`; `admit` and `turnAway` for the world to call. Open: walking them in from out of sight.
+  - Note: Rules done. While watched, survivors walk in from out of sight to the fire and ask to stay; right-click takes them in, sneak-right-click sends them away. Open: an in-client check that they never appear in view.
 
 ### The loop
 
-- [ ] **M1-12 Stockpile.** A Granary Seal marks a storage building. The stockpile is the real contents of its containers.
+- [x] **M1-12 Stockpile.** A Granary Seal marks a storage building. The stockpile is the real contents of its containers.
   - Done when: adding or removing items by hand changes what `/roe stockpile` reports.
+  - Note: `roe:granary_seal`: chests and barrels within 6 blocks of a Seal inside a claim are the stockpile. `mc/world/Stockpiles` turns changes made by hand into `stockpile_counted` events and carries rule changes (meals, harvests, raids) into the chests; overflow is piled by the Seal as an event. Game test covers both directions.
 - [~] **M1-13 Blueprints.** The player places a ghost outline. Builders fetch materials from the stockpile and build it block by block. Ship three: farm, stable, bunkhouse, in the Hollowcrown style.
   - Done when: all three can be built start to finish by survivors while the player watches, and the owner has approved how the finished buildings look.
-  - Note: Started. Farm (77 blocks, ~14 builder-hours: 38 oak log, 4 torch), stable (gabled stone-brick roof) and bunkhouse (four beds; 97 oak log, 24 cobblestone, 4 brown bed, 1 oak door, 1 torch) are text blueprints in `data/roe/blueprint/`, read and split into steps by `camp/Blueprint`; builders already put up the farm in `BlueprintTest`. Costs are in raw goods (a plank is a quarter log). Preview for the owner: `docs/previews/starter-buildings.png`. Open: ghost outline, block-by-block placement in-world, and the owner's approval of the look.
+  - Note: Blueprints, Plans (`roe:plan`, staked out by right-clicking the ground), builders' steps placed block by block (deferred when unloaded), and a particle outline of what is left to build. Blueprints load from data packs (`data/<ns>/blueprint/*.txt`). Open: the owner's approval of the look (`docs/previews/starter-buildings.png`).
 - [~] **M1-14 Jobs.** Farmer (till, plant, harvest, deposit), builder (M1-13), gatherer (wood and stone to the stockpile). The player assigns jobs by interacting with a survivor.
   - Done when: an assigned farmer completes a full harvest-and-deposit cycle with no help.
-  - Note: Rules done: `camp/Jobs` (farmer, gatherer, builder, fighter) with `nextOrder` / `begin` / `complete` shared by both tiers; `BuildSites` for builders. Open: bodies doing the work and the assign-by-interaction UI.
+  - Note: Rules done. Bodies carry out orders while watched (walk to the field, site or claim edge, work, carry the goods to the granary), finishing no earlier than the rules' due hour. Sneak-right-click a resident to give the next job. Open: a full harvest-and-deposit cycle watched in a client.
 - [~] **M1-15 Needs: food and rest.** People eat twice a day from the stockpile and sleep in a bed under a roof. Unmet needs lower output, then cause illness, then death or leaving. Each step is a Ledger event.
   - Done when: tests cover the full decline, and in-game an unfed survivor visibly weakens and then leaves or dies with a traceable cause.
   - Note: Rules done: `camp/Needs`: two meals a day from the granary (x1.25 in winter), beds counted by the world; weak, then ill, then death (or leaving, for restless, proud and greedy people), each an event caused by the last. `NeedsTest` walks a death back to `food_ran_out` and `day_started`. Open: the visible decline in-world.
 - [~] **M1-16 Ledger tier.** When the settlement unloads, its people keep working as records, updated once per in-game hour, using the same rates as the embodied jobs.
   - Done when: leaving for a full in-game day and coming back shows crops harvested, food eaten and the stockpile changed.
   - Note: Rules done: `Jobs.hourly` runs work for settlements nobody is watching, through the same calls the embodied tier uses. Open: the in-world check after a day away.
-- [ ] **M1-17 Deferred edits.** Off-camera block changes queue per chunk and apply when the chunk loads.
+- [x] **M1-17 Deferred edits.** Off-camera block changes queue per chunk and apply when the chunk loads.
   - Done when: a builder finishes a blueprint while the player is away and the building is standing on return.
+  - Note: `mc/world/DeferredEdits`: per-chunk queue saved with the world, applied on chunk load, never force-loads. Builders' steps finished while unwatched go through it. Game test covers a loaded chunk; the unloaded path is untested in-world.
 - [x] **M1-18 Tier-invariance test.** Run the same settlement for ten in-game days in the Embodied tier and in the Ledger tier.
   - Done when: food produced and eaten agree within a tolerance written in the test, and the test runs in the build.
   - Note: `camp/TierInvarianceTest`: ten days in each tier, the embodied run driven with a one-hour walking lag. Food produced and eaten agree within 10%. Runs in `./gradlew test`.
@@ -121,13 +128,13 @@ Not in M1: other nations, diplomacy, research, model calls, money, freehand anch
   - Note: Rules done: `camp/Standing` from population and territory with the 0.30 and 0.25 weights. A three-person camp scores about 1.39. Open: `/roe standing`.
 - [~] **M1-20 Barbarian raid.** One T1 raid sized from Standing: leather armour, diamond axes, very low health. It is announced first (smoke on the horizon, a warning from a survivor), walks in from the Wilds and goes for the food store.
   - Done when: the raid never appears in view, the player has time to prepare, and the outcome is in the Ledger.
-  - Note: Rules done: `camp/Raids`: planned on day 8 after founding, announced 24 hours before arrival with its direction, sized 3 x Standing within 4-10, resolved by a calculator when unwatched or by the world when watched (calculator after 6 hours if the world never reports). Open: raiders walking in and fighting in-world.
+  - Note: Rules done. While watched: signal smoke on the horizon in the raid's direction after the warning, then `roe:barbarian` raiders (leather armour, diamond axe, 4 hearts) walk in from out of sight for the granary; fighters attack them, others flee. All down = driven off; holding the granary 10 s = food taken. Open: an in-client fight.
 - [~] **M1-21 The first winter.** Winter arrives on the calendar. A survivor warns the player one season ahead. Getting through with at least one survivor alive completes Act I.
   - Done when: both endings work (the camp survives, or the camp is lost) and each tells the player why, from the Ledger.
-  - Note: Rules done: `camp/ActOne`: warning a season ahead with meals needed and held, `first_winter_came`, `act_one_survived`, `camp_lost`; endings list the deaths, departures, raid and famine as causes. Open: telling the player in-world.
+  - Note: Rules done. Players at or owning the camp are told of the warning, the winter, the raid, deaths and the ending in chat, each with its `/roe why` id. Open: in-client check of both endings.
 - [~] **M1-22 Player guidance.** The survivors tell the player what the camp needs, in character, from template text. No tutorial pop-ups.
   - Done when: a new player can reach winter without outside instructions.
-  - Note: Rules done: `camp/Guidance.advise` gives ranked lines in the speaker's voice (raid, illness, food, winter, beds, no farmer, no seeds, idle, builders waiting). Open: survivors saying them in-world, and a new-player test.
+  - Note: Rules done. While watched, the person with the most urgent advice says it aloud every two minutes when it changes. Open: a new player reaching winter with no instructions.
 
 ### Finish
 

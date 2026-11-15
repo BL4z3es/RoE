@@ -11,6 +11,12 @@ public final class RiseOfEmpires implements ModInitializer {
     @Override
     public void onInitialize() {
         io.github.bl4z3es.riseofempires.mc.block.ModItems.register();
+        io.github.bl4z3es.riseofempires.mc.entity.ModEntities.register();
+        io.github.bl4z3es.riseofempires.mc.world.Blueprints.register();
+        io.github.bl4z3es.riseofempires.mc.world.Sites.register();
+        io.github.bl4z3es.riseofempires.mc.world.Upkeep.register();
+        io.github.bl4z3es.riseofempires.mc.entity.Bodies.register();
+        io.github.bl4z3es.riseofempires.mc.entity.RaidBattles.register();
         io.github.bl4z3es.riseofempires.mc.world.RoeWorld.register();
         io.github.bl4z3es.riseofempires.mc.world.DeferredEdits.register();
         io.github.bl4z3es.riseofempires.mc.world.Construction.register();
