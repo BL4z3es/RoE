@@ -64,6 +64,15 @@ class SurvivorsTest {
     }
 
     @Test
+    void manyCampsDoNotRunOutOfNames() {
+        Simulation sim = CampRules.install(new Simulation(new WorldState(5), new Ledger()));
+        int camps = SurvivorTables.NAMES.size();
+        for (int i = 0; i < camps; i++) Founding.found(sim, "p" + i, "P" + i, Place.overworld(i * 1000, 64, 0));
+        sim.advanceTo(16);
+        assertEquals(camps * Balance.STARTING_SURVIVORS, sim.state().characters().size());
+    }
+
+    @Test
     void sameSeedSamePeopleDifferentSeedDifferentPeople() {
         Camp a = new Camp(11), b = new Camp(11), c = new Camp(12);
         assertEquals(names(a), names(b));

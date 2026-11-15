@@ -74,7 +74,8 @@ public final class Survivors implements SimSystem {
         for (Character c : sim.state().characters()) usedNames.add(c.name());
         List<String> names = new ArrayList<>(SurvivorTables.NAMES);
         names.removeAll(usedNames);
-        if (names.isEmpty()) names = new ArrayList<>(SurvivorTables.NAMES);
+        // Names repeat once the pool runs low: a big world has more than one Mara.
+        if (names.size() < Balance.STARTING_SURVIVORS) names = new ArrayList<>(SurvivorTables.NAMES);
         List<SurvivorTables.Trait> traits = new ArrayList<>(SurvivorTables.TRAITS);
         List<String> wants = new ArrayList<>(SurvivorTables.WANTS);
         List<String> memories = new ArrayList<>(SurvivorTables.MEMORIES);

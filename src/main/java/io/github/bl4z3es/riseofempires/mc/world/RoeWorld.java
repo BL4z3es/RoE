@@ -98,6 +98,7 @@ public final class RoeWorld {
         Simulation sim = RULES.apply(new Simulation(state, ledger));
         current = new RoeWorld(server, sim, data, log, DeferredEdits.load(data.deferred()));
         Sites.listen(current);
+        HollowRuin.choose(current);
         Upkeep.listen(current);
         RiseOfEmpires.LOG.info("[riseofempires] world loaded: hour {}, {} events, {} settlements",
                 state.hour(), ledger.size(), state.settlements().size());

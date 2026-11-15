@@ -35,4 +35,12 @@ public final class McTuning {
     public static final int ADVICE_TICKS = 2400;
     /** Lines of the event log written per flush of the background writer. */
     public static final int LEDGER_FLUSH_LINES = 256;
+
+    /** How far from world spawn the Hollow Ruin stands. */
+    public static final int RUIN_DISTANCE_BLOCKS = 160;
+    /** Weak raiders camped at the ruin until someone founds a camp. */
+    public static final int RUIN_GUARDS = 3;
+    /** Bread and seeds left in the ruin's chest beside the Charter. */
+    public static final int RUIN_BREAD = 3;
+    public static final int RUIN_SEEDS = 6;
 }

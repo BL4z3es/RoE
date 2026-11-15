@@ -33,11 +33,17 @@ C = {  # name: (top, side) colours
  'oak_door': ((146, 112, 64), (124, 94, 54)), 'oak_trapdoor': ((146, 112, 64), (120, 90, 50)),
  'chest': ((168, 116, 44), (138, 92, 32)), 'oak_stairs': ((176, 142, 86), (150, 120, 72)),
  'oak_slab': ((176, 142, 86), (150, 120, 72)),
- 'stone_brick_stairs': ((128, 128, 128), (104, 104, 104)), 'stone_bricks': ((128, 128, 128), (104, 104, 104)),
+ 'stone_brick_stairs': ((128, 128, 128), (104, 104, 104)),
+ 'mossy_stone_bricks': ((104, 124, 92), (88, 104, 78)), 'cracked_stone_bricks': ((118, 116, 112), (96, 94, 90)),
+ 'chiseled_stone_bricks': ((140, 140, 140), (112, 112, 112)), 'mossy_cobblestone': ((100, 120, 90), (84, 100, 76)),
+ 'gravel': ((132, 124, 120), (112, 104, 100)), 'stone_brick_wall': ((128, 128, 128), (104, 104, 104)),
+ 'cobweb': ((235, 235, 235), (210, 210, 210)), 'lectern': ((180, 140, 84), (140, 104, 60)), 'stone_bricks': ((128, 128, 128), (104, 104, 104)),
 }
 def shape(st):
     n = re.sub(r'^minecraft:', '', st.split('[')[0])
-    if n in ('oak_fence', 'oak_fence_gate'): return n, 0.25, 1.0, 0.0
+    if n in ('oak_fence', 'oak_fence_gate', 'stone_brick_wall'): return n, 0.5, 1.0, 0.0
+    if n == 'cobweb': return n, 0.6, 0.6, 0.0
+    if n == 'lectern': return n, 0.8, 0.85, 0.0
     if n in ('torch', 'wall_torch'): return n, 0.15, 0.6, 0.0
     if n in ('oak_trapdoor',): return n, 0.2, 1.0, 0.0
     if n in ('stone_brick_slab', 'oak_slab', 'brown_bed'): return n, 1.0, 0.5, 0.0
@@ -84,12 +90,14 @@ def render(path):
         cube(d, ox, oy, x, y, z, w, h, top, side)
     return img
 imgs = []
-for name in ('farm', 'stable', 'bunkhouse'):
-    im = render(f'{BP}/{name}.txt'); im.save(f'{OUT}/{name}.png'); imgs.append((name, im))
+import os
+for name in [a for a in sys.argv[3:]] or ('farm', 'stable', 'bunkhouse'):
+    path = name if name.endswith('.txt') else f'{BP}/{name}.txt'; name = os.path.basename(name)[:-4] if name.endswith('.txt') else name
+    im = render(path); im.save(f'{OUT}/{name}.png'); imgs.append((name, im))
 Wt = sum(i.width for _, i in imgs) + 20 * (len(imgs) + 1); Ht = max(i.height for _, i in imgs) + 60
 sheet = Image.new('RGB', (Wt, Ht), (28, 31, 38)); d = ImageDraw.Draw(sheet); x = 20
 try: f = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', 22)
 except Exception: f = ImageFont.load_default()
 for name, im in imgs:
-    sheet.paste(im, (x, 50)); d.text((x + 10, 14), name.capitalize(), fill=(230, 225, 210), font=f); x += im.width + 20
-sheet.save(f'{OUT}/starter-buildings.png'); print(sheet.size)
+    sheet.paste(im, (x, 50)); d.text((x + 10, 14), name.replace('_', ' ').capitalize(), fill=(230, 225, 210), font=f); x += im.width + 20
+sheet.save(f'{OUT}/' + ('starter-buildings.png' if len(sys.argv) <= 3 else 'preview.png')); print(sheet.size)

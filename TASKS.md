@@ -88,8 +88,9 @@ Not in M1: other nations, diplomacy, research, model calls, money, freehand anch
 
 ### The opening
 
-- [ ] **M1-09 The Hollow Ruin.** A hand-built structure placed by world generation near spawn in the starting region, guarded by weak raiders, holding the Charter. Build it to the L1 quality bar.
+- [~] **M1-09 The Hollow Ruin.** A hand-built structure placed by world generation near spawn in the starting region, guarded by weak raiders, holding the Charter. Build it to the L1 quality bar.
   - Done when: a fresh world has one reachable Hollow Ruin within a set distance of spawn, and the owner has approved how it looks.
+  - Note: `mc/world/HollowRuin`: one per world, 160 blocks from spawn in a seed-chosen direction, built from `data/roe/ruin/hollow_ruin.txt` when its chunk first loads (so it is already there when seen). Its chest holds the Charter, 3 bread and 6 seeds; a lectern stands inside; three weak raiders camp there until the first camp is founded. Game test checks the lectern and the Charter. Preview: `docs/previews/hollow-ruin.png`. Open: the owner's approval of the look, and an in-client walk to it.
 - [x] **M1-10 The Charter.** An item found in the ruin. Placing it on a lectern founds the camp: a `SettlementFounded` event, a claim, a tent and a campfire.
   - Done when: founding works once per player, is recorded in the Ledger and survives a reload.
   - Note: `roe:charter` on an empty lectern: `Founding.found`, the lectern takes a written Charter, a canvas tent with a bed and a campfire go up block by block, and the founder receives three Plans (farm, stable, bunkhouse). Game test covers once-only founding; a second Charter inside a claim says which camp owns the land.
@@ -138,8 +139,9 @@ Not in M1: other nations, diplomacy, research, model calls, money, freehand anch
 
 ### Finish
 
-- [ ] **M1-23 Performance check.** Measure server tick time with the camp loaded and with it unloaded. Record the hardware, the method and the results here.
+- [~] **M1-23 Performance check.** Measure server tick time with the camp loaded and with it unloaded. Record the hardware, the method and the results here.
   - Done when: the numbers are written under this task.
+  - Note: Measured the Ledger tier only (camp unloaded). Hardware: cloud container, 4 vCPU Intel Xeon @ 2.10 GHz, Temurin JDK 25.0.5. Method: pure-Java run of `CampRules` with fed camps (farmer, gatherer, fighter each), 5 in-game days warm-up, then the mean over 20 in-game days. Results: 1 camp 0.12 ms per in-game hour; 10 camps 0.16 ms; 50 camps 0.62 ms. One in-game hour is 1000 ticks, so the unloaded cost per tick is negligible; a 12-hour sleep catch-up for one camp is about 1.4 ms, spread over ticks by the 2 ms budget. Not measured: tick time with the camp loaded and bodies working, which needs a client session.
 - [ ] **M1-24 Polish pass.** Fix anything that pops in, teleports, idles with no reason or looks unfinished.
   - Done when: every line of the quality bar in `RULES.md` section 4 holds.
 - [ ] **M1-25 Playtest.** Three people who did not build it play from spawn to the end of winter.
