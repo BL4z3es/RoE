@@ -42,6 +42,25 @@ jobs:
       - name: Build and test
         run: ./gradlew build --no-daemon
 
+      # The shipped jar in a real client and a normal world: join, the Hollow Ruin, founding, three days.
+      # v0.1.0-prealpha froze every world on join and no other test could see it. Nothing is
+      # published unless this passes.
+      - name: Play the opening in the shipped jar
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runProdClientGameTest --no-daemon
+
+      - name: Keep the pictures from the playthrough
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opening-playthrough
+          path: |
+            build/prodClient/screenshots
+            build/prodClient/logs/latest.log
+            build/prodClient/crash-reports
+          if-no-files-found: ignore
+
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -57,7 +76,7 @@ jobs:
           API="$(grep '^fabric_api_version=' gradle.properties | cut -d= -f2)"
           case "$TAG" in
             m[0-9]*) TITLE="Rise of Empires $(echo "$TAG" | tr '[:lower:]' '[:upper:]')"; KIND="Milestone $(echo "$TAG" | tr '[:lower:]' '[:upper:]') release." ;;
-            *)       TITLE="Rise of Empires ${TAG} (test build)"; KIND="Test build ${TAG}. Expect bugs: it has passed automated tests but has not been played." ;;
+            *)       TITLE="Rise of Empires ${TAG} (test build)"; KIND="Test build ${TAG}. Expect bugs: it has passed the automated tests, including a scripted playthrough of the opening in a real client, but no person has played it." ;;
           esac
           cat > notes.md <<NOTES
           ${KIND}
@@ -76,3 +95,18 @@ jobs:
           else
             gh release create "$TAG" "$JAR" --title "$TITLE" --notes-file notes.md --prerelease --target "${GITHUB_SHA}"
           fi
+
+      # release/withdrawn.txt lists builds nobody should use (tag|reason). Say so on their pages.
+      - name: Mark withdrawn releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -f release/withdrawn.txt ] || exit 0
+          while IFS='|' read -r OLD WHY; do
+            case "$OLD" in ''|\#*) continue ;; esac
+            gh release view "$OLD" >/dev/null 2>&1 || continue
+            NAME="$(gh release view "$OLD" --json name --jq .name)"
+            case "$NAME" in '[BROKEN]'*) continue ;; esac
+            { printf '**Do not use this build.** %s\n\n---\n\n' "$WHY"; gh release view "$OLD" --json body --jq .body; } > withdrawn.md
+            gh release edit "$OLD" --title "[BROKEN] $NAME" --notes-file withdrawn.md
+          done < release/withdrawn.txt

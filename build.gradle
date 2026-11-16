@@ -29,7 +29,7 @@ fabricApi {
         createSourceSet = true
         modId = 'roe-gametest'
         enableGameTests = true
-        enableClientGameTests = false
+        enableClientGameTests = true
         eula = true
     }
 }
@@ -40,6 +40,7 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    productionRuntimeMods "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
     // Test-only. Never shipped in the mod jar (rule E20).
     testImplementation platform("org.junit:junit-bom:${project.junit_version}")
@@ -88,3 +89,29 @@ tasks.register('checkCoreImports') {
 }
 check.dependsOn 'checkCoreImports'
 compileJava.dependsOn 'checkCoreImports'
+
+// Plays the opening in the jar that is shipped, the way a player runs it: a real client, a normal
+// generated world, the remapped jars, Fabric API from the mods list. Needs a display; on a machine
+// without one run it as: xvfb-run -a ./gradlew runProdClientGameTest
+// The release workflow runs this before it publishes anything. Pictures land in build/prodClient/screenshots.
+tasks.register('gametestJar', Jar) {
+    // Only the client test goes in: the in-world server tests are run by runGameTest.
+    from(sourceSets.gametest.output) {
+        include '**/OpeningPlaythroughTest*'
+    }
+    from 'src/gametest/prod'
+    archiveClassifier = 'gametest-dev'
+    destinationDirectory = layout.buildDirectory.dir('devlibs')
+}
+tasks.register('remapGametestJar', net.fabricmc.loom.task.RemapJarTask) {
+    inputFile = tasks.named('gametestJar').flatMap { it.archiveFile }
+    classpath.from(sourceSets.gametest.compileClasspath)
+    archiveClassifier = 'gametest'
+    addNestedDependencies = false
+    destinationDirectory = layout.buildDirectory.dir('devlibs')
+}
+tasks.register('runProdClientGameTest', net.fabricmc.loom.task.prod.ClientProductionRunTask) {
+    runDir = layout.buildDirectory.dir('prodClient')
+    mods.from(tasks.named('remapGametestJar'))
+    jvmArgs.add('-Dfabric.client.gametest')
+}

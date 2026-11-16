@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -13,8 +12,8 @@ import net.minecraft.world.level.block.Block;
 
 /**
  * Block changes made while nobody could see them (task M1-17, rule E6). Each is queued against
- * its chunk and applied in order when that chunk next loads. Chunks are never loaded to apply
- * them. Saved with the world.
+ * its chunk and applied in order once that chunk has next finished loading (see
+ * {@link ArrivedChunks}). Chunks are never loaded to apply them. Saved with the world.
  */
 public final class DeferredEdits {
     /** One block change. {@code cause} is the Ledger event that made it, or 0. */
@@ -35,10 +34,7 @@ public final class DeferredEdits {
     private final Map<String, List<Edit>> byChunk = new LinkedHashMap<>();
 
     public static void register() {
-        ServerChunkEvents.CHUNK_LOAD.register((level, chunk) -> {
-            RoeWorld w = RoeWorld.get(level.getServer());
-            if (w != null) w.deferred().applyChunk(level, chunk.getPos());
-        });
+        ArrivedChunks.listen((w, level, chunk) -> w.deferred().applyChunk(level, chunk.getPos()));
     }
 
     /**

@@ -117,7 +117,7 @@ Not in M1: other nations, diplomacy, research, model calls, money, freehand anch
   - Note: Rules done: `Jobs.hourly` runs work for settlements nobody is watching, through the same calls the embodied tier uses. Open: the in-world check after a day away.
 - [x] **M1-17 Deferred edits.** Off-camera block changes queue per chunk and apply when the chunk loads.
   - Done when: a builder finishes a blueprint while the player is away and the building is standing on return.
-  - Note: `mc/world/DeferredEdits`: per-chunk queue saved with the world, applied on chunk load, never force-loads. Builders' steps finished while unwatched go through it. Game test covers a loaded chunk; the unloaded path is untested in-world.
+  - Note: `mc/world/DeferredEdits`: per-chunk queue saved with the world, applied at the end of the tick in which the chunk finishes loading (`ArrivedChunks`; applying inside the load callback froze the server, fixed 2026-11-16), never force-loads. Builders' steps finished while unwatched go through it. Game test covers a loaded chunk; the unloaded path is untested in-world.
 - [x] **M1-18 Tier-invariance test.** Run the same settlement for ten in-game days in the Embodied tier and in the Ledger tier.
   - Done when: food produced and eaten agree within a tolerance written in the test, and the test runs in the build.
   - Note: `camp/TierInvarianceTest`: ten days in each tier, the embodied run driven with a one-hour walking lag. Food produced and eaten agree within 10%. Runs in `./gradlew test`.
@@ -151,6 +151,8 @@ Not in M1: other nations, diplomacy, research, model calls, money, freehand anch
   - Done when: the M1 release and its jar are on GitHub.
 
 **Test builds:** `v0.1.0-prealpha` published 2026-11-15 at the owner's request, before M1 is finished: https://github.com/BL4z3es/RoE/releases/tag/v0.1.0-prealpha (Minecraft 1.21.11). Built on GitHub by `.github/workflows/release.yml`; a session triggers it by pushing a one-line tag to `release/upload.txt`.
+
+**Broken build, 2026-11-16:** `v0.1.0-prealpha` froze every world a moment after a player joined (the owner reported it as an instant crash in single-player and on servers). Cause: `HollowRuin` and `DeferredEdits` read and changed the level from inside Fabric's `CHUNK_LOAD` callback, where the server thread then waits for the very chunk it is loading. Fix: `mc/world/ArrivedChunks` notes loaded chunks and hands them over at the end of the tick. Why no test saw it: the server game tests have no player and no generated terrain, and the ruin test called `buildAt` directly. New test: `OpeningPlaythroughTest` (`./gradlew runProdClientGameTest`, needs a display or `xvfb-run`) plays the opening in a real client with the shipped, remapped jar in a normal world; the release workflow now refuses to publish unless it passes. Fixed build: `v0.1.1-prealpha`. The old release is marked `[BROKEN]` through `release/withdrawn.txt`.
 
 **M1 playtest notes:** none yet.
 

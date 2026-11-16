@@ -1,0 +1,3 @@
+# Releases that must not be used. One per line: tag|what is wrong and what to use instead.
+# The release workflow marks each one [BROKEN] and puts the reason at the top of its notes.
+v0.1.0-prealpha|This build freezes any world, single-player or server, a moment after a player joins. Use v0.1.1-prealpha or newer.

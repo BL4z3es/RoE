@@ -5,7 +5,16 @@
   "name": "Rise of Empires game tests",
   "environment": "*",
   "entrypoints": {
-    "fabric-gametest": ["io.github.bl4z3es.riseofempires.gametest.WorldGameTests", "io.github.bl4z3es.riseofempires.gametest.PeopleGameTests", "io.github.bl4z3es.riseofempires.gametest.RuinGameTests"]
+    "fabric-gametest": [
+      "io.github.bl4z3es.riseofempires.gametest.WorldGameTests",
+      "io.github.bl4z3es.riseofempires.gametest.PeopleGameTests",
+      "io.github.bl4z3es.riseofempires.gametest.RuinGameTests"
+    ],
+    "fabric-client-gametest": [
+      "io.github.bl4z3es.riseofempires.gametest.OpeningPlaythroughTest"
+    ]
   },
-  "depends": { "roe": "*" }
+  "depends": {
+    "roe": "*"
+  }
 }

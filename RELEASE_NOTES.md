@@ -1,14 +1,22 @@
-# Rise of Empires 0.1.0-prealpha (test build)
+# Rise of Empires 0.1.1-prealpha (test build)
 
-A test build of the first milestone, **M1 · The First Winter**. Everything below has passed
-automated tests (unit tests and in-world game tests on a dedicated server), but **nobody has
-played it in a client yet**. Expect bugs, and please write down what you see.
+A test build of the first milestone, **M1 · The First Winter**.
+
+**0.1.0-prealpha is broken: do not use it.** It froze every world, single-player or server, a
+moment after a player joined. The Hollow Ruin was being built from inside Minecraft's
+"chunk loaded" callback, which makes the server wait on itself for ever. No test had a player in
+a normal generated world, so none saw it. 0.1.1 fixes that and adds the missing test.
+
+This build has passed the unit tests, the in-world server tests, and a scripted playthrough of
+the opening in a real client with the jar from this release: join a normal world, find the
+ruin, found a camp, take in three survivors, live three days. **No person has played it yet.**
+Expect bugs, and please write down what you see.
 
 ## Install
 
 1. Install Minecraft **1.21.11** with **Fabric Loader 0.20.1** or newer.
 2. Put **Fabric API 0.141.6+1.21.11** (or newer for 1.21.11) in your `mods` folder.
-3. Put `riseofempires-0.1.0-prealpha+mc1.21.11.jar` from this release in your `mods` folder.
+3. Put `riseofempires-0.1.1-prealpha+mc1.21.11.jar` from this release in your `mods` folder.
 4. Start a **new** world. Java 21 is needed (the Minecraft launcher provides it).
 
 ## What to try
@@ -36,7 +44,11 @@ played it in a client yet**. Expect bugs, and please write down what you see.
 
 ## Known gaps
 
-- Never played in a client: walking, building, the raid fight and the speech lines may misbehave.
+- Never played by a person. The scripted playthrough covers joining, the ruin, founding, survivors
+  arriving and three days passing. It does not cover building a plan to the end, the raid fight or winter.
+- The tent goes up wherever the lectern is, whatever the ground: on a slope or a shore it looks wrong.
+- The Hollow Ruin is built a moment after its chunk loads, so on a slow machine it can be seen appearing
+  in the distance.
 - People can appear or vanish about 40 blocks from you, out of view but not over the horizon.
 - A farm worked while you are far away shows no crops; only the granary changes.
 - The Granary Seal has no crafting recipe and the mod's items are not in the creative menu yet.

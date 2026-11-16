@@ -15,7 +15,6 @@ import io.github.bl4z3es.riseofempires.mc.entity.BarbarianEntity;
 import io.github.bl4z3es.riseofempires.mc.entity.ModEntities;
 import java.io.BufferedReader;
 import java.util.stream.Collectors;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -31,8 +30,8 @@ import net.minecraft.world.level.levelgen.Heightmap;
 
 /**
  * The Hollow Ruin (task M1-09): one per world, {@link McTuning#RUIN_DISTANCE_BLOCKS} from spawn
- * in a direction set by the world seed. It is put up when its chunk is first loaded, before any
- * player can see it (law L1), from {@code data/roe/ruin/hollow_ruin.txt}. Its chest holds the
+ * in a direction set by the world seed. It is put up as soon as its chunk has first finished
+ * loading (see {@link ArrivedChunks}), from {@code data/roe/ruin/hollow_ruin.txt}. Its chest holds the
  * Charter. A few weak raiders camp there until the first camp is founded.
  */
 public final class HollowRuin {
@@ -44,7 +43,7 @@ public final class HollowRuin {
     public static final String CHUNK_X = "ruin.chunk_x", CHUNK_Z = "ruin.chunk_z", BUILT = "ruin.built";
 
     public static void register() {
-        ServerChunkEvents.CHUNK_LOAD.register(HollowRuin::onChunkLoad);
+        ArrivedChunks.listen(HollowRuin::onChunkArrived);
     }
 
     /** Chooses where the ruin stands, once per world. Called at server start. */
@@ -69,9 +68,8 @@ public final class HollowRuin {
         return new BlockPos(x, y, z);
     }
 
-    private static void onChunkLoad(ServerLevel level, LevelChunk chunk) {
-        RoeWorld w = RoeWorld.get(level.getServer());
-        if (w == null || level != w.overworld()) return;
+    private static void onChunkArrived(RoeWorld w, ServerLevel level, LevelChunk chunk) {
+        if (level != w.overworld()) return;
         String cx = w.state().tag(Ref.THE_WORLD, CHUNK_X);
         if (cx.isEmpty() || chunk.getPos().x != Integer.parseInt(cx)
                 || chunk.getPos().z != Integer.parseInt(w.state().tag(Ref.THE_WORLD, CHUNK_Z))) return;

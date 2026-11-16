@@ -19,6 +19,7 @@ public final class RiseOfEmpires implements ModInitializer {
         io.github.bl4z3es.riseofempires.mc.entity.Bodies.register();
         io.github.bl4z3es.riseofempires.mc.entity.RaidBattles.register();
         io.github.bl4z3es.riseofempires.mc.world.RoeWorld.register();
+        io.github.bl4z3es.riseofempires.mc.world.ArrivedChunks.register();
         io.github.bl4z3es.riseofempires.mc.world.DeferredEdits.register();
         io.github.bl4z3es.riseofempires.mc.world.Construction.register();
         io.github.bl4z3es.riseofempires.mc.world.Stockpiles.register();

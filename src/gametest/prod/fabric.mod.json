@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "roe-gametest",
+  "version": "0.1.0",
+  "name": "Rise of Empires client tests (shipped-jar run)",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": ["io.github.bl4z3es.riseofempires.gametest.OpeningPlaythroughTest"]
+  },
+  "depends": { "roe": "*" }
+}
