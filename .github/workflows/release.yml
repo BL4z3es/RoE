@@ -38,6 +38,19 @@ jobs:
             21
             25
 
+      # Downloads from the Fabric and Mojang servers sometimes drop. Fetch and compile first, trying
+      # up to three times, so a dropped connection does not fail the release.
+      - name: Fetch libraries and compile
+        env:
+          GRADLE_OPTS: -Dorg.gradle.internal.repository.max.tentatives=5 -Dorg.gradle.internal.repository.initial.backoff=2000
+        run: |
+          for attempt in 1 2 3; do
+            ./gradlew compileJava compileClientJava compileGametestJava --no-daemon && exit 0
+            echo "Attempt ${attempt} failed; waiting before trying again."
+            sleep 30
+          done
+          exit 1
+
       # Full build: compiles, runs the unit tests and the in-world game tests, and makes the jar.
       - name: Build and test
         run: ./gradlew build --no-daemon

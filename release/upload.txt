@@ -1,1 +1,3 @@
 v0.1.1-prealpha
+# Only the first line is read. Lines below are notes.
+# 2026-11-16: second request; the first build lost its connection to the Fabric servers.
