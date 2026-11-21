@@ -168,6 +168,9 @@ public final class RoeServer {
 		simNanosMax = Math.max(simNanosMax, spent);
 	}
 
+	/** Raw totals for measurements: total nanoseconds, steps, worst nanoseconds. */
+	public long[] simTotals() { return new long[] {simNanosTotal, simRuns, simNanosMax}; }
+
 	/** Mean and worst time of one full simulation step, in microseconds, since the server started. */
 	public long[] simTimingMicros() {
 		return new long[] {simRuns == 0 ? 0 : simNanosTotal / simRuns / 1000, simNanosMax / 1000, simRuns};

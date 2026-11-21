@@ -14,6 +14,7 @@
 			"io.github.bl4z3es.riseofempires.gametest.FarmerGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.GathererGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.OpeningGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.PerfGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.PersistenceGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.RaidGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.SeasonGameTest",
