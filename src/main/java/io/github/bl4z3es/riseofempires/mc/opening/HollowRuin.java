@@ -88,11 +88,13 @@ public final class HollowRuin implements RoeServer.Module {
 		for (int i = 0; i < MAX_MOVES_PER_TICK && state.fact("ruin.y").isEmpty(); i++) {
 			settle(state, level, now);
 		}
-		if (state.fact("ruin.built").isPresent() || state.fact("ruin.y").isEmpty()) return;
+		if (state.fact("ruin.y").isEmpty()) return;
 		int[] xz = place(state);
 		BlockPos origin = new BlockPos(xz[0], baseY(state), xz[1]);
 		if (cached == null) cached = StructureFiles.load(roe.server().getResourceManager(), STRUCTURE).orElse(null);
 		if (cached == null) return;
+		fillChestOnceLoaded(state, level, origin, cached);
+		if (state.fact("ruin.built").isPresent()) return;
 
 		// Fallback for chunks that existed before the spot was chosen: fill them while nobody is near.
 		for (ChunkPos cp : footprintChunks(origin, cached)) {
@@ -139,6 +141,7 @@ public final class HollowRuin implements RoeServer.Module {
 	}
 
 	private static void finishIfComplete(SimState state, ServerLevel level, BlockPos origin, Structure ruin) {
+		if (state.fact("ruin.built").isPresent()) return;
 		for (ChunkPos cp : footprintChunks(origin, ruin)) {
 			if (state.fact(chunkFact(cp)).isEmpty()) return;
 		}
@@ -203,10 +206,24 @@ public final class HollowRuin implements RoeServer.Module {
 			BlockPos p = StructureBuilder.worldPos(origin, b, 0);
 			if (p.getX() >> 4 != cp.x() || p.getZ() >> 4 != cp.z() || p.getY() < level.getMinY() || p.getY() > level.getMaxY()) continue;
 			chunk.setBlockState(p, StructureBuilder.state(level, b, 0), QUIET);
-			if (b.state().startsWith("minecraft:chest")) {
-				BlockEntity be = chunk.getBlockEntity(p);
-				if (be instanceof ChestBlockEntity chest) fillChest(chest);
+		}
+		// The chest is filled on a later tick (fillChestOnceLoaded): changing a container marks its chunk
+		// dirty, and asking for a chunk while it is still being generated deadlocks the server.
+	}
+
+	/** Fills the ruin's chest once its part is placed and its chunk is fully loaded. Once only. */
+	private static void fillChestOnceLoaded(SimState state, ServerLevel level, BlockPos origin, Structure ruin) {
+		if (state.fact("ruin.chest").isPresent()) return;
+		for (Structure.Block b : ruin.blocks()) {
+			if (!b.state().startsWith("minecraft:chest")) continue;
+			BlockPos p = StructureBuilder.worldPos(origin, b, 0);
+			if (state.fact(chunkFact(ChunkPos.containing(p))).isEmpty() || !level.isLoaded(p)) return;
+			if (level.getBlockEntity(p) instanceof ChestBlockEntity chest) {
+				fillChest(chest);
+				Event placed = state.ledger().get(Long.parseLong(state.fact("ruin.event").orElseThrow())).orElseThrow();
+				state.putFact("ruin.chest", p.getX() + "," + p.getY() + "," + p.getZ(), placed);
 			}
+			return;
 		}
 	}
 
@@ -222,7 +239,7 @@ public final class HollowRuin implements RoeServer.Module {
 	}
 
 	/** The Charter, plus a little to start on: bread, seeds and a stone axe. */
-	private static void fillChest(ChestBlockEntity chest) {
+	public static void fillChest(ChestBlockEntity chest) {
 		chest.setItem(4, new ItemStack(Items.WHEAT_SEEDS, LOOT_WHEAT_SEEDS));
 		chest.setItem(11, new ItemStack(Items.BREAD, LOOT_BREAD));
 		chest.setItem(13, new ItemStack(CharterItem.ITEM));

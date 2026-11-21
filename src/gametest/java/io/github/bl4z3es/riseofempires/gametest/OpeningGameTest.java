@@ -73,6 +73,8 @@ public final class OpeningGameTest {
 				var be = level.getBlockEntity(p);
 				helper.assertTrue(be instanceof ChestBlockEntity, "the chest exists in its own chunk");
 				ChestBlockEntity chest = (ChestBlockEntity) be;
+				// In play the chest is filled a tick later, once its chunk is fully loaded (see HollowRuin).
+				HollowRuin.fillChest(chest);
 				for (int i = 0; i < chest.getContainerSize(); i++) if (chest.getItem(i).is(CharterItem.ITEM)) charter = true;
 			}
 			if (b.state().equals("minecraft:cobblestone") && level.getBlockState(p).is(Blocks.COBBLESTONE)) walls++;
