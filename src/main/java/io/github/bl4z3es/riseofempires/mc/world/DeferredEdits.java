@@ -58,10 +58,14 @@ public final class DeferredEdits implements RoeServer.Module {
 
 	/** Queues the blocks the Ledger tier built while the settlement was unloaded. */
 	public static void queueBuilt(RoeServer roe, List<LedgerTier.BuiltBlock> built) {
+		queueBuilt(roe, built, roe.content().blueprints());
+	}
+
+	public static void queueBuilt(RoeServer roe, List<LedgerTier.BuiltBlock> built, Map<String, Blueprint> blueprints) {
 		for (LedgerTier.BuiltBlock b : built) {
 			BuildSite site = roe.state().buildSite(b.siteId()).orElse(null);
 			if (site == null) continue;
-			Blueprint bp = roe.content().blueprints().get(site.blueprintId());
+			Blueprint bp = blueprints.get(site.blueprintId());
 			if (bp == null || b.index() >= bp.blocks().size()) continue;
 			BlueprintBlock block = bp.blocks().get(b.index());
 			Place p = Building.worldPos(site, block);
