@@ -32,8 +32,9 @@ Goal: an empty mod that builds, runs and has a place for tests.
 - [x] **M0-2 Generate the project.** Create a Fabric mod project from the official template for the pinned version. Split client and common source sets.
   - Done when: `./gradlew build` prints `BUILD SUCCESSFUL` and a jar is in `build/libs/`.
   - Note: From `FabricMC/fabric-example-mod` branch `26.3`, with `splitEnvironmentSourceSets()`. Build passes and makes `build/libs/riseofempires-0.0.1.jar`. Dropped the template's example mixins, maven-publish, icon and CC0 licence. The mod has no licence: that is your call. You need JDK 25 to build.
-- [ ] **M0-3 Create the package layout** from `CLAUDE.md`: `core/`, `mc/`, `ai/`, with a `package-info.java` in each stating what belongs there.
+- [x] **M0-3 Create the package layout** from `CLAUDE.md`: `core/`, `mc/`, `ai/`, with a `package-info.java` in each stating what belongs there.
   - Done when: the layout exists and `core/` compiles with no Minecraft imports.
+  - Note: Three top-level packages under `io.github.bl4z3es.riseofempires`. Sub-packages (`core/ledger` and so on) get created by the tasks that first need them, not as empty folders now. The no-Minecraft rule is only written down until M0-6 enforces it.
 - [ ] **M0-4 Log on start.** The mod logs `[riseofempires] initialised` on server start.
   - Done when: `./gradlew runClient` and `./gradlew runServer` both show the line.
 - [ ] **M0-5 Test harness.** Add pure-Java tests for `core/` and in-world game tests. Check with the owner first that a test-only library is acceptable (open question 7).
