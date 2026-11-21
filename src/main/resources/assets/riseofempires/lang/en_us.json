@@ -9,6 +9,7 @@
 	"advice.unwell": "%s is %s. They need food and a bed.",
 	"block.riseofempires.granary_seal": "Granary Seal",
 	"entity.riseofempires.character": "Person",
+	"entity.riseofempires.raider": "Barbarian",
 	"item.riseofempires.bunkhouse_blueprint": "Bunkhouse Blueprint",
 	"item.riseofempires.charter": "The Charter",
 	"item.riseofempires.charter.lore": "Set it on a lectern to found a camp.",
