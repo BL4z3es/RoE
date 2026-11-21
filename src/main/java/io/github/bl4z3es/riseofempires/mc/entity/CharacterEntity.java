@@ -349,6 +349,12 @@ public class CharacterEntity extends PathfinderMob {
 
 	// ---- jobs
 
+	/** A player's empty hand gives this person a job (task M1-14). */
+	@Override
+	protected net.minecraft.world.InteractionResult mobInteract(Player player, net.minecraft.world.InteractionHand hand) {
+		return io.github.bl4z3es.riseofempires.mc.job.JobAssignment.onInteract(this, player, hand);
+	}
+
 	public void setJob(@Nullable Job job) { this.job = job; }
 
 	public @Nullable Job job() { return job; }

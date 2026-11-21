@@ -1,0 +1,15 @@
+{
+	"name": "Test hut",
+	"blocks": [
+		[0,0,0,"minecraft:cobblestone","minecraft:cobblestone"],
+		[1,0,0,"minecraft:cobblestone","minecraft:cobblestone"],
+		[2,0,0,"minecraft:cobblestone","minecraft:cobblestone"],
+		[3,0,0,"minecraft:cobblestone","minecraft:cobblestone"],
+		[1,1,0,"minecraft:air",""],
+		[2,1,0,"minecraft:air",""],
+		[0,1,0,"minecraft:oak_planks","minecraft:oak_planks"],
+		[3,1,0,"minecraft:oak_planks","minecraft:oak_planks"],
+		[0,2,0,"minecraft:oak_planks","minecraft:oak_planks"],
+		[3,2,0,"minecraft:oak_planks","minecraft:oak_planks"]
+	]
+}
