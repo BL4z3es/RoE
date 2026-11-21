@@ -26,6 +26,7 @@ public final class RiseOfEmpires implements ModInitializer {
 		io.github.bl4z3es.riseofempires.mc.opening.Opening.register();
 		CharacterBodies.register();
 		io.github.bl4z3es.riseofempires.mc.raid.RaidDirector.register();
+		io.github.bl4z3es.riseofempires.mc.job.JobModule.register();
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> LOGGER.info("initialised"));
 	}
 }

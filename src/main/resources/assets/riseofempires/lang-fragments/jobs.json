@@ -1,0 +1,8 @@
+{
+  "message.riseofempires.job.none": "%s: \"Then I will rest my hands until you need them.\"",
+  "message.riseofempires.job.farmer": "%s: \"The fields, then. I will cut what is ripe, sow again and bring the harvest to the granary.\"",
+  "message.riseofempires.job.builder": "%s: \"I will build. Keep the granary stocked and I will raise whatever you have laid out.\"",
+  "message.riseofempires.job.gatherer": "%s: \"I will gather wood and stone near the camp and bring it in.\"",
+  "message.riseofempires.builder.missing": "%1$s: \"The granary has no %2$s. I cannot go on until some is stored.\"",
+  "message.riseofempires.builder.no_store": "%1$s: \"%2$s has no granary with a chest to take materials from. I cannot build.\""
+}
