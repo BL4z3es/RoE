@@ -3,6 +3,7 @@ package io.github.bl4z3es.riseofempires;
 import io.github.bl4z3es.riseofempires.mc.RoeServer;
 import io.github.bl4z3es.riseofempires.mc.command.RoeCommands;
 import io.github.bl4z3es.riseofempires.mc.story.Storyteller;
+import io.github.bl4z3es.riseofempires.mc.farm.FarmSync;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ public final class RiseOfEmpires implements ModInitializer {
 		RoeCommands.register();
 		Storyteller.register();
 		io.github.bl4z3es.riseofempires.mc.stockpile.StockpileSync.register();
+		FarmSync.register();
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> LOGGER.info("initialised"));
 	}
 }

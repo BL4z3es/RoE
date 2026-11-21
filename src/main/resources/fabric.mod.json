@@ -16,6 +16,9 @@
 			"io.github.bl4z3es.riseofempires.client.RiseOfEmpiresClient"
 		]
 	},
+	"mixins": [
+		"riseofempires.mixins.json"
+	],
 	"depends": {
 		"fabricloader": ">=0.20.1",
 		"minecraft": "~26.3",
