@@ -65,8 +65,19 @@ public final class Building {
 		BuildSite next = site.withPlaced(placed);
 		s.put(next, built);
 		out.add(built);
-		if (!next.complete()) return out;
+		completeIfDone(s, siteId, built, now, blueprints).ifPresent(out::add);
+		return out;
+	}
 
+	/**
+	 * If a site has all its blocks but its completion is not yet recorded, writes BLUEPRINT_COMPLETED and
+	 * registers what the building adds: wheat plots for a farm, beds for a bunkhouse. Called after work in
+	 * either tier, so a building finished off-camera counts the same as one finished in view (rule E3).
+	 */
+	public static Optional<Event> completeIfDone(SimState s, long siteId, Event cause, long now, Map<String, Blueprint> blueprints) {
+		BuildSite site = s.buildSite(siteId).orElseThrow();
+		String doneKey = "site.done." + siteId;
+		if (!site.complete() || s.fact(doneKey).isPresent()) return Optional.empty();
 		Blueprint bp = blueprints.get(site.blueprintId());
 		if (bp == null) throw new IllegalArgumentException("Unknown blueprint " + site.blueprintId());
 		List<Plot> plots = new ArrayList<>(s.farm(site.settlementId()));
@@ -80,19 +91,19 @@ public final class Building {
 		}
 		Ref sref = Ref.settlement(site.settlementId());
 		EventDraft cd = EventDraft.of(EventTypes.BLUEPRINT_COMPLETED, now).at(site.origin())
-				.actor(sref).cause(built.id())
+				.actor(sref).cause(cause.id())
 				.effect(sref, "completed", bp.id());
 		if (plotsAdded > 0) cd.effect(sref, "plots", "+" + plotsAdded);
 		if (beds > 0) cd.effect(sref, "beds", "+" + beds);
 		Event done = s.ledger().append(cd);
+		s.putFact(doneKey, Long.toString(done.id()), done);
 		if (plotsAdded > 0) s.putFarm(site.settlementId(), plots, done);
 		if (beds > 0) {
 			String key = "beds." + site.settlementId();
 			int have = Integer.parseInt(s.fact(key).orElse("0"));
 			s.putFact(key, Integer.toString(have + beds), done);
 		}
-		out.add(done);
-		return out;
+		return Optional.of(done);
 	}
 
 	/** The incomplete site with the lowest id. */
