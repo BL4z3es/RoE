@@ -54,6 +54,9 @@ public final class RoeServer {
 	private RoeContent content;
 	private final Set<Long> sleptTonight = new HashSet<>();
 	private int tickCounter;
+	private long simNanosTotal;
+	private long simNanosMax;
+	private long simRuns;
 	private int moduleCursor;
 
 	private RoeServer(MinecraftServer server) {
@@ -159,6 +162,15 @@ public final class RoeServer {
 		}
 		moduleCursor = 0;
 		tickCounter = 0;
+		long spent = System.nanoTime() - start;
+		simNanosTotal += spent;
+		simRuns++;
+		simNanosMax = Math.max(simNanosMax, spent);
+	}
+
+	/** Mean and worst time of one full simulation step, in microseconds, since the server started. */
+	public long[] simTimingMicros() {
+		return new long[] {simRuns == 0 ? 0 : simNanosTotal / simRuns / 1000, simNanosMax / 1000, simRuns};
 	}
 
 	// Conversions between core places and the world

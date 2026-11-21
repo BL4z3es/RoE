@@ -47,7 +47,8 @@ public final class RoeCommands {
 								.executes(c -> run(c, (src, roe) -> why(src, roe, LongArgumentType.getLong(c, "eventId"))))))
 				.then(Commands.literal("settlement").executes(c -> run(c, RoeCommands::settlement)))
 				.then(Commands.literal("stockpile").executes(c -> run(c, RoeCommands::stockpile)))
-				.then(Commands.literal("standing").executes(c -> run(c, RoeCommands::standing))));
+				.then(Commands.literal("standing").executes(c -> run(c, RoeCommands::standing)))
+				.then(Commands.literal("perf").executes(c -> run(c, RoeCommands::perf))));
 	}
 
 	private interface Body { void run(CommandSourceStack src, RoeServer roe); }
@@ -127,6 +128,14 @@ public final class RoeCommands {
 			}
 			say(src, "Last change: #" + s.lastStockEvent(st.id()));
 		});
+	}
+
+	private static void perf(CommandSourceStack src, RoeServer roe) {
+		long[] t = roe.simTimingMicros();
+		say(src, String.format("Server tick: %.2f ms average over the last 100 ticks.", roe.server().getAverageTickTimeNanos() / 1e6));
+		say(src, "Rise of Empires step (once a second): " + t[0] + " us average, " + t[1] + " us worst, " + t[2] + " steps.");
+		say(src, roe.state().ledger().size() + " events, " + roe.state().characters().size() + " characters, "
+				+ io.github.bl4z3es.riseofempires.mc.world.DeferredEdits.INSTANCE.size() + " deferred edits waiting.");
 	}
 
 	private static void standing(CommandSourceStack src, RoeServer roe) {
