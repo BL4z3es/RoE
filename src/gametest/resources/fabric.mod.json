@@ -19,7 +19,8 @@
 			"io.github.bl4z3es.riseofempires.gametest.RaidGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.SeasonGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.StarterBuildingsGameTest",
-			"io.github.bl4z3es.riseofempires.gametest.StockpileGameTest"
+			"io.github.bl4z3es.riseofempires.gametest.StockpileGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.SurvivorArrivalGameTest"
 		]
 	},
 	"depends": {

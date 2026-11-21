@@ -33,6 +33,7 @@ fabricApi {
 		enableGameTests = true
 		enableClientGameTests = false
 		eula = true // the owner accepted the Minecraft EULA for dev and test runs
+		clearRunDirectory = true // every game-test run starts from a fresh world, so tests cannot see old state
 	}
 }
 
