@@ -38,8 +38,9 @@ Goal: an empty mod that builds, runs and has a place for tests.
 - [x] **M0-4 Log on start.** The mod logs `[riseofempires] initialised` on server start.
   - Done when: `./gradlew runClient` and `./gradlew runServer` both show the line.
   - Note: Logged from Fabric's `SERVER_STARTED` event, so it fires on the dedicated server and on the client's integrated server once a world opens. Checked both on 2026-11-21. Fabric prints it as `[Server thread/INFO] (riseofempires) initialised`, in round brackets. `CLAUDE.md` expects square brackets; that file is yours to fix. Running the client headless needs Xvfb, `SDL_VIDEO_FORCE_EGL=1`, `onboardAccessibility:false` in `run/options.txt` and an existing world for `--quickPlaySingleplayer`. The owner accepted the Minecraft EULA for dev runs.
-- [ ] **M0-5 Test harness.** Add pure-Java tests for `core/` and in-world game tests. Check with the owner first that a test-only library is acceptable (open question 7).
+- [x] **M0-5 Test harness.** Add pure-Java tests for `core/` and in-world game tests. Check with the owner first that a test-only library is acceptable (open question 7).
   - Done when: `./gradlew test` runs one passing sample test and the game-test task runs one passing sample test. Update the command names in `CLAUDE.md` if they differ.
+  - Note: JUnit 5.14.4 runs `src/test`, test scope only. Loom's `fabricApi.configureTests` sets up `src/gametest` as a separate test mod run by `./gradlew runGameTest` (capital T, so `CLAUDE.md` is updated). Both sample tests pass. I broke the game test on purpose to check it really runs, and the run failed. `./gradlew build` also runs the game tests: a full build takes about 15 s now. The jar contains no test classes and no JUnit. The game-test runner reports 2 tests, ours and one more that Fabric API brings.
 - [ ] **M0-6 Guard the core.** Add a build check that fails if anything under `core/` imports a Minecraft class.
   - Done when: adding such an import makes `./gradlew build` fail with a clear message.
 - [ ] **M0-7 Constants home.** Create the single config class for balance numbers and load the values from `CONTEXT.md` section 5 into it.

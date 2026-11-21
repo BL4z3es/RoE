@@ -53,9 +53,9 @@ Expected: a Minecraft client opens with the mod loaded. The log contains `[riseo
 Expected: a dedicated server starts with no client classes loaded. Use this to catch client-only code in server paths.
 
 ```bash
-./gradlew runGametest
+./gradlew runGameTest
 ```
-Expected: all in-world tests pass and the process exits with code 0. (Added in task M0-5. If the pinned Fabric version names this task differently, update this line.)
+Expected: all in-world tests pass and the process exits with code 0. Added in task M0-5. `./gradlew build` also runs this, because Loom wires it into `check`.
 
 ## Layout
 
