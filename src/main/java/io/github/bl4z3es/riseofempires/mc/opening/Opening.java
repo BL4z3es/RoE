@@ -12,6 +12,7 @@ public final class Opening {
 		CharterItem.register();
 		CharterLectern.register();
 		FoundersTent.register();
+		HollowRuin.registerGeneration();
 		RoeServer.addModule(new HollowRuin());
 		RoeServer.addModule(new CharterWatcher());
 	}

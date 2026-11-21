@@ -53,6 +53,35 @@ public final class OpeningGameTest {
 		helper.succeed();
 	}
 
+	@GameTest
+	public void ruinIsBuiltChunkByChunk(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Structure ruin = StructureFiles.load(level.getServer().getResourceManager(), HollowRuin.STRUCTURE).orElseThrow();
+		BlockPos base = helper.absolutePos(new BlockPos(0, 1, FAR + 48));
+		// Put the ruin's centre on a chunk corner so its walls fall in four chunks.
+		BlockPos origin = new BlockPos(base.getX() >> 4 << 4, base.getY(), base.getZ() >> 4 << 4);
+		var chunks = HollowRuin.footprintChunks(origin, ruin);
+		helper.assertTrue(chunks.size() >= 4, "the ruin spans several chunks, got " + chunks.size());
+		for (var cp : chunks) {
+			HollowRuin.placePart(level.getChunk(cp.x(), cp.z()), origin, ruin);
+		}
+		boolean charter = false;
+		int walls = 0;
+		for (Structure.Block b : ruin.blocks()) {
+			BlockPos p = origin.offset(b.dx(), b.dy(), b.dz());
+			if (b.state().startsWith("minecraft:chest")) {
+				var be = level.getBlockEntity(p);
+				helper.assertTrue(be instanceof ChestBlockEntity, "the chest exists in its own chunk");
+				ChestBlockEntity chest = (ChestBlockEntity) be;
+				for (int i = 0; i < chest.getContainerSize(); i++) if (chest.getItem(i).is(CharterItem.ITEM)) charter = true;
+			}
+			if (b.state().equals("minecraft:cobblestone") && level.getBlockState(p).is(Blocks.COBBLESTONE)) walls++;
+		}
+		helper.assertTrue(charter, "the chest holds a Charter");
+		helper.assertTrue(walls > 50, "foundation and walls are placed across the chunks, got " + walls);
+		helper.succeed();
+	}
+
 	@GameTest(maxTicks = 200)
 	public void charterOnLecternFoundsTheCamp(GameTestHelper helper) throws Exception {
 		ServerLevel level = helper.getLevel();
