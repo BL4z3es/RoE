@@ -53,8 +53,16 @@ public final class CharacterBodies implements RoeServer.Module {
 	public static final String ASKS_TO_STAY_KEY = "riseofempires.survivor.asks_to_stay";
 
 	private final Map<Long, Long> setOutTimes = new HashMap<>();
+	/** How far from the camp a survivor starts. Only tests change it. */
+	private volatile int originBlocks = Balance.SURVIVOR_ORIGIN_DISTANCE_BLOCKS;
 
 	private CharacterBodies() {}
+
+	/** Test hook: starts survivors this far from the camp instead of the normal distance. */
+	public void setOriginDistance(int blocks) { originBlocks = blocks; }
+
+	/** Test hook: back to {@code Balance.SURVIVOR_ORIGIN_DISTANCE_BLOCKS}. */
+	public void resetOriginDistance() { originBlocks = Balance.SURVIVOR_ORIGIN_DISTANCE_BLOCKS; }
 
 	public static void register() {
 		RoeEntities.register();
@@ -95,7 +103,7 @@ public final class CharacterBodies implements RoeServer.Module {
 		BlockPos centre = RoeServer.pos(st.centre());
 		for (long id : Survivors.pending(state, st.id())) {
 			long since = setOutTime(state, id, now);
-			long walk = (long) Balance.SURVIVOR_ORIGIN_DISTANCE_BLOCKS * Balance.WALK_TICKS_PER_BLOCK;
+			long walk = (long) originBlocks * Balance.WALK_TICKS_PER_BLOCK;
 			CharacterEntity body = bodies.get(id);
 			if (!embodied) {
 				if (now - since >= walk) Survivors.join(state, id, st.id(), now, st.centre());
@@ -137,8 +145,8 @@ public final class CharacterBodies implements RoeServer.Module {
 	private void spawnArrival(ServerLevel level, Settlement st, long id, BlockPos centre) {
 		for (int i = 0; i < SPOT_ATTEMPTS; i++) {
 			double angle = level.getRandom().nextDouble() * Math.PI * 2;
-			int x = centre.getX() + (int) Math.round(Math.cos(angle) * Balance.SURVIVOR_ORIGIN_DISTANCE_BLOCKS);
-			int z = centre.getZ() + (int) Math.round(Math.sin(angle) * Balance.SURVIVOR_ORIGIN_DISTANCE_BLOCKS);
+			int x = centre.getX() + (int) Math.round(Math.cos(angle) * originBlocks);
+			int z = centre.getZ() + (int) Math.round(Math.sin(angle) * originBlocks);
 			if (!level.isPositionEntityTicking(new BlockPos(x, centre.getY(), z))) continue;
 			int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
 			BlockPos spot = new BlockPos(x, y, z);
