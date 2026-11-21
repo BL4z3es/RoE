@@ -29,8 +29,9 @@ Goal: an empty mod that builds, runs and has a place for tests.
 - [x] **M0-1 Pin versions.** Ask the owner for the Java group name and confirm the mod id. Look up the current stable Minecraft, Fabric Loader, Fabric API, Loom and Gradle versions on the Fabric develop page. Write them to `gradle.properties` and to `CONTEXT.md` section 4.
   - Done when: the versions are recorded and the owner has confirmed the group and mod id.
   - Note: Pinned MC 26.3, Loader 0.20.1, Fabric API 0.166.2+26.3, Loom 1.19.4 (the template floats `1.19-SNAPSHOT`; pinned exact instead), Gradle 9.8.2, Java 25. Group `io.github.bl4z3es`, mod id `riseofempires`, JUnit 5 approved. Owner: `RULES.md` E20 still tags test-only libraries `PROPOSED`; you decided it, so that tag is yours to update. 26.4 is at snapshot 10 and will likely release soon; upgrading is a separate task, not automatic.
-- [ ] **M0-2 Generate the project.** Create a Fabric mod project from the official template for the pinned version. Split client and common source sets.
+- [x] **M0-2 Generate the project.** Create a Fabric mod project from the official template for the pinned version. Split client and common source sets.
   - Done when: `./gradlew build` prints `BUILD SUCCESSFUL` and a jar is in `build/libs/`.
+  - Note: From `FabricMC/fabric-example-mod` branch `26.3`, with `splitEnvironmentSourceSets()`. Build passes and makes `build/libs/riseofempires-0.0.1.jar`. Dropped the template's example mixins, maven-publish, icon and CC0 licence. The mod has no licence: that is your call. You need JDK 25 to build.
 - [ ] **M0-3 Create the package layout** from `CLAUDE.md`: `core/`, `mc/`, `ai/`, with a `package-info.java` in each stating what belongs there.
   - Done when: the layout exists and `core/` compiles with no Minecraft imports.
 - [ ] **M0-4 Log on start.** The mod logs `[riseofempires] initialised` on server start.
