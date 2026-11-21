@@ -110,6 +110,8 @@ processResources {
 	filesMatching("fabric.mod.json") {
 		expand "version": version
 	}
+	// Language fragments are merged into lang/en_us.json by tools/merge_lang.py; they do not ship.
+	exclude "assets/riseofempires/lang-fragments/**"
 }
 
 tasks.withType(JavaCompile).configureEach {
