@@ -44,8 +44,9 @@ Goal: an empty mod that builds, runs and has a place for tests.
 - [x] **M0-6 Guard the core.** Add a build check that fails if anything under `core/` imports a Minecraft class.
   - Done when: adding such an import makes `./gradlew build` fail with a clear message.
   - Note: `checkCoreIsPure` runs before both compile steps. It scans `core/` in `src/main` and `src/test` for `net.minecraft`, `com.mojang` or `net.fabricmc`, whether imported or written out in full, and skips comments. It fails with the file, the line and what to do. Checked with a test file: the build failed on lines 5 and 8, as expected, and passed again once the file was removed. I added Mojang and Fabric to the ban because they exist only because the game does. Reflection or a string-built class name would get past it; reviews have to catch those.
-- [ ] **M0-7 Constants home.** Create the single config class for balance numbers and load the values from `CONTEXT.md` section 5 into it.
+- [x] **M0-7 Constants home.** Create the single config class for balance numbers and load the values from `CONTEXT.md` section 5 into it.
   - Done when: every row of the numbers table that M1 uses exists as a named constant.
+  - Note: `core/Balance.java` holds the 10 rows M1 uses, 11 constants in all (T1 raid size is a min and a max). Embodied fighters, world size, history length and T2–T4 are left out until a task needs them. One gap for you: `CONTEXT.md` 3.5 says winter has "no outdoor crop growth", but that number is not in the section 5 table. M1-08 needs it. Add a row such as "Winter growth multiplier: 0" and I will make it a constant. I did not add it myself because the table is yours.
 
 ---
 
