@@ -16,6 +16,7 @@ public final class RiseOfEmpires implements ModInitializer {
 	public void onInitialize() {
 		RoeServer.register();
 		RoeCommands.register();
+		io.github.bl4z3es.riseofempires.mc.stockpile.StockpileSync.register();
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> LOGGER.info("initialised"));
 	}
 }
