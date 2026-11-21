@@ -35,8 +35,9 @@ Goal: an empty mod that builds, runs and has a place for tests.
 - [x] **M0-3 Create the package layout** from `CLAUDE.md`: `core/`, `mc/`, `ai/`, with a `package-info.java` in each stating what belongs there.
   - Done when: the layout exists and `core/` compiles with no Minecraft imports.
   - Note: Three top-level packages under `io.github.bl4z3es.riseofempires`. Sub-packages (`core/ledger` and so on) get created by the tasks that first need them, not as empty folders now. The no-Minecraft rule is only written down until M0-6 enforces it.
-- [ ] **M0-4 Log on start.** The mod logs `[riseofempires] initialised` on server start.
+- [x] **M0-4 Log on start.** The mod logs `[riseofempires] initialised` on server start.
   - Done when: `./gradlew runClient` and `./gradlew runServer` both show the line.
+  - Note: Logged from Fabric's `SERVER_STARTED` event, so it fires on the dedicated server and on the client's integrated server once a world opens. Checked both on 2026-11-21. Fabric prints it as `[Server thread/INFO] (riseofempires) initialised`, in round brackets. `CLAUDE.md` expects square brackets; that file is yours to fix. Running the client headless needs Xvfb, `SDL_VIDEO_FORCE_EGL=1`, `onboardAccessibility:false` in `run/options.txt` and an existing world for `--quickPlaySingleplayer`. The owner accepted the Minecraft EULA for dev runs.
 - [ ] **M0-5 Test harness.** Add pure-Java tests for `core/` and in-world game tests. Check with the owner first that a test-only library is acceptable (open question 7).
   - Done when: `./gradlew test` runs one passing sample test and the game-test task runs one passing sample test. Update the command names in `CLAUDE.md` if they differ.
 - [ ] **M0-6 Guard the core.** Add a build check that fails if anything under `core/` imports a Minecraft class.
