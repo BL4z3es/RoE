@@ -8,5 +8,6 @@ public final class RiseOfEmpiresClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		CharacterRenderer.register();
+		io.github.bl4z3es.riseofempires.client.raid.RaiderRenderer.register();
 	}
 }
