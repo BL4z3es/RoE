@@ -1,0 +1,8 @@
+{
+	"item.riseofempires.farm_blueprint": "Farm Blueprint",
+	"item.riseofempires.stable_blueprint": "Stable Blueprint",
+	"item.riseofempires.bunkhouse_blueprint": "Bunkhouse Blueprint",
+	"message.riseofempires.blueprint_placed": "The %s is laid out. Its builders will start at the marked block.",
+	"message.riseofempires.blueprint_outside_camp": "A blueprint can only be laid out inside your own camp.",
+	"message.riseofempires.blueprint_unknown": "Nobody can read this blueprint."
+}

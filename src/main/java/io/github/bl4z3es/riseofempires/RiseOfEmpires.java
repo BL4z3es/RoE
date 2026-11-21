@@ -21,6 +21,7 @@ public final class RiseOfEmpires implements ModInitializer {
 		Storyteller.register();
 		io.github.bl4z3es.riseofempires.mc.stockpile.StockpileSync.register();
 		FarmSync.register();
+		io.github.bl4z3es.riseofempires.mc.blueprint.BlueprintItems.register();
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> LOGGER.info("initialised"));
 	}
 }
