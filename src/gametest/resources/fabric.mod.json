@@ -8,6 +8,7 @@
 		"fabric-gametest": [
 			"io.github.bl4z3es.riseofempires.gametest.BlueprintGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.DeferredEditsGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.OpeningGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.PersistenceGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.SeasonGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.StockpileGameTest"
