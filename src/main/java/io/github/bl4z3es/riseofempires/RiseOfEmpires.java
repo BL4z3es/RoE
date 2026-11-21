@@ -4,6 +4,7 @@ import io.github.bl4z3es.riseofempires.mc.RoeServer;
 import io.github.bl4z3es.riseofempires.mc.command.RoeCommands;
 import io.github.bl4z3es.riseofempires.mc.story.Storyteller;
 import io.github.bl4z3es.riseofempires.mc.farm.FarmSync;
+import io.github.bl4z3es.riseofempires.mc.entity.CharacterBodies;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ public final class RiseOfEmpires implements ModInitializer {
 		FarmSync.register();
 		io.github.bl4z3es.riseofempires.mc.blueprint.BlueprintItems.register();
 		io.github.bl4z3es.riseofempires.mc.opening.Opening.register();
+		CharacterBodies.register();
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> LOGGER.info("initialised"));
 	}
 }
