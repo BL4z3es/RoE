@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.FarmlandBlock;
 /** Task M1-08: crops obey the season. No outdoor growth in winter; indoor and summer crops grow. */
 public final class SeasonGameTest {
 	private static final int TICKS = 2000;
-	private static final int LIGHT_SETTLES_AFTER_TICKS = 10;
 	private static final BlockPos WINTER_OUTDOORS = new BlockPos(1, 1, 1);
 	private static final BlockPos SUMMER_OUTDOORS = new BlockPos(3, 1, 1);
 	private static final BlockPos WINTER_ROOFED = new BlockPos(5, 1, 1);
@@ -24,13 +23,14 @@ public final class SeasonGameTest {
 		plant(helper, WINTER_OUTDOORS, false);
 		plant(helper, SUMMER_OUTDOORS, false);
 		plant(helper, WINTER_ROOFED, true);
-		// The light engine needs a few ticks to see the new blocks.
-		helper.runAfterDelay(LIGHT_SETTLES_AFTER_TICKS, () -> {
+		// The light engine needs some ticks to see the new blocks; wait until the roofed crop is lit enough to grow.
+		helper.succeedWhen(() -> {
+			int light = helper.getLevel().getMaxLocalRawBrightness(helper.absolutePos(WINTER_ROOFED));
+			helper.assertTrue(light >= 9, "waiting for light under the roof (" + light + ")");
 			try {
 				helper.assertTrue(grownAfter(helper, WINTER_OUTDOORS, Season.WINTER) == 0, "outdoor wheat grew in winter");
 				helper.assertTrue(grownAfter(helper, SUMMER_OUTDOORS, Season.SUMMER) > 0, "outdoor wheat did not grow in summer");
 				helper.assertTrue(grownAfter(helper, WINTER_ROOFED, Season.WINTER) > 0, "roofed wheat did not grow in winter");
-				helper.succeed();
 			} finally {
 				SeasonalGrowth.override = null;
 			}
