@@ -33,9 +33,14 @@ fabricApi {
 		enableGameTests = true
 		enableClientGameTests = false
 		eula = true // the owner accepted the Minecraft EULA for dev and test runs
-		clearRunDirectory = true // every game-test run starts from a fresh world, so tests cannot see old state
 	}
 }
+
+// Every game-test run starts from a fresh world, so tests never see an earlier run's camps or Ledger.
+def cleanGameTestWorld = tasks.register("cleanGameTestWorld", Delete) {
+	delete layout.buildDirectory.dir("run/gameTest/world")
+}
+tasks.matching { it.name == "runGameTest" }.configureEach { dependsOn cleanGameTestWorld }
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
