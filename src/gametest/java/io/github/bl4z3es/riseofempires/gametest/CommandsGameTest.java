@@ -32,8 +32,8 @@ public final class CommandsGameTest {
 		SimState s = roe.state();
 		long now = roe.now();
 		String player = UUID.randomUUID().toString();
-		// Far from other tests' camps so the claims do not overlap.
-		BlockPos centrePos = new BlockPos(3_000_000, 64, 3_000_000);
+		// Far from other camps, and at a new spot each run, so no older claim covers it (claims are 32 blocks).
+		BlockPos centrePos = new BlockPos(3_000_000 + Math.floorMod(player.hashCode(), 10_000) * 100, 64, 3_000_000);
 		Place centre = new Place("minecraft:overworld", centrePos.getX(), centrePos.getY(), centrePos.getZ());
 		Founding.found(s, player, "Commandhold", centre, now).orElseThrow();
 		long sid = s.settlementFoundedBy(player).orElseThrow();
@@ -63,7 +63,8 @@ public final class CommandsGameTest {
 		run(roe, source, "roe settlement");
 		String settlement = String.join("\n", out);
 		helper.assertTrue(settlement.contains("Commandhold") && settlement.contains("3 living residents")
-				&& settlement.contains("Ada Fen"), "settlement should show where we stand:\n" + settlement);
+				&& settlement.contains("Ada Fen"), "settlement should show where we stand (sid " + sid + ", residents now " + s.residents(sid).size() + ", conditions "
+				+ s.settlement(sid).orElseThrow().population().stream().map(id -> s.character(id).orElseThrow().condition() + "/" + s.character(id).orElseThrow().needs()).toList() + "):\n" + settlement);
 
 		out.clear();
 		run(roe, source, "roe standing");
