@@ -51,6 +51,58 @@ test {
 	useJUnitPlatform()
 }
 
+// Rule E5: core/ is plain Java. Fail the build if core code or core tests name a Minecraft,
+// Mojang or Fabric class, by import or by fully qualified name. Comments are ignored.
+def coreSources = fileTree("src") { include "*/java/**/riseofempires/core/**/*.java" }
+def gameClassPattern = ~/\b(net\.minecraft|com\.mojang|net\.fabricmc)\.[\w.]*/
+def coreCheckMarker = layout.buildDirectory.file("checks/core-is-pure.ok")
+
+def checkCoreIsPure = tasks.register("checkCoreIsPure") {
+	group = "verification"
+	description = "Fails if anything under core/ uses Minecraft, Mojang or Fabric classes (rule E5)."
+	inputs.files(coreSources)
+	outputs.file(coreCheckMarker)
+
+	doLast {
+		def problems = []
+		coreSources.each { file ->
+			def inBlockComment = false
+			file.readLines().eachWithIndex { line, index ->
+				def code = new StringBuilder()
+				int i = 0
+				while (i < line.length()) {
+					if (inBlockComment) {
+						int end = line.indexOf("*/", i)
+						if (end < 0) { i = line.length() } else { inBlockComment = false; i = end + 2 }
+					} else if (line.startsWith("/*", i)) {
+						inBlockComment = true; i += 2
+					} else if (line.startsWith("//", i)) {
+						i = line.length()
+					} else {
+						code.append(line.charAt(i)); i++
+					}
+				}
+				def match = code =~ gameClassPattern
+				if (match.find()) {
+					problems << "  ${file.path}:${index + 1}: uses ${match.group()}"
+				}
+			}
+		}
+		if (!problems.isEmpty()) {
+			throw new GradleException(
+				"core/ must not use Minecraft, Mojang or Fabric classes (rule E5).\n" +
+				problems.join("\n") + "\n" +
+				"Move the code that touches the game into mc/ and pass plain Java values into core/.")
+		}
+		def marker = coreCheckMarker.get().asFile
+		marker.parentFile.mkdirs()
+		marker.text = "ok\n"
+	}
+}
+
+tasks.named("compileJava") { dependsOn checkCoreIsPure }
+tasks.named("compileTestJava") { dependsOn checkCoreIsPure }
+
 processResources {
 	def version = project.version
 	inputs.property "version", version
