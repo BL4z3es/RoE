@@ -1,0 +1,11 @@
+{
+	"_note": "PROPOSED placeholder survivors for Hollowcrown. Names, traits, wants and memories await the owner.",
+	"survivors": [
+		{"name": "Edda Marl", "trait": "steady hands", "want": "a roof that does not leak", "memory": "the night the mill at Elmford burned"},
+		{"name": "Tobin Reave", "trait": "quick to anger", "want": "word of his brother", "memory": "his brother marching north with the Regent's men"},
+		{"name": "Wynn Ashby", "trait": "patient", "want": "a field of her own", "memory": "her grandmother's tales of the last emperor"},
+		{"name": "Garet Hollis", "trait": "light sleeper", "want": "walls between him and the dark", "memory": "raiders on the Fenwick road"},
+		{"name": "Mira Coll", "trait": "talkative", "want": "company at the fire", "memory": "the market at Crownmere before the war"},
+		{"name": "Osric Penn", "trait": "stubborn", "want": "to never go hungry again", "memory": "the hungry winter three years past"}
+	]
+}
