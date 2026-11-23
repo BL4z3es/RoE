@@ -23,6 +23,7 @@
 			"io.github.bl4z3es.riseofempires.gametest.SurvivorArrivalGameTest"
 		],
 		"fabric-client-gametest": [
+			"io.github.bl4z3es.riseofempires.gametest.client.ReviewScreenshotsClientGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.client.ClientSmokeGameTest"
 		]
 	},
