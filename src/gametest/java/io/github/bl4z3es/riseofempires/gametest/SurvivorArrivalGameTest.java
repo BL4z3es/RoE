@@ -98,8 +98,8 @@ public final class SurvivorArrivalGameTest {
 
 	/**
 	 * Stage 0: survivors start {@code ORIGIN_BLOCKS} away and walk in; their arrival has a cause in the Ledger.
-	 * Stage 1: a second camp's survivors set out while a player stands at the camp; none may appear within
-	 * 48 blocks of that player. (One test, because a player's 48-block radius would also block another
+	 * Stage 1: a second camp's survivors set out while a player stands at the camp; none may first appear
+	 * within 48 blocks of that player (they may start farther out, hidden, and walk in). (One test, because a player's 48-block radius would also block another
 	 * test's survivors, and with no player at all the area is not entity-ticking.)
 	 */
 	@GameTest(maxTicks = 2400, padding = 40)
@@ -124,14 +124,22 @@ public final class SurvivorArrivalGameTest {
 		List<Long> secondIds = new java.util.ArrayList<>();
 		Map<Long, Double> firstSeen = new HashMap<>();
 		Map<Long, Double> lastSeen = new HashMap<>();
+		Map<Long, Double> firstSeenStage1 = new HashMap<>();
 		helper.succeedWhen(() -> {
 			CharacterBodies.INSTANCE.tick(roe, ++virtualNow[0]);
 			if (stage[0] == 1) {
-				helper.assertTrue(bodies(level, centre, secondIds).isEmpty(), "a survivor appeared within 48 blocks of a player");
+				// They may set out from farther away, hidden, and walk in; none may first appear within 48 blocks.
+				for (CharacterEntity body : level.getEntitiesOfClass(CharacterEntity.class, new AABB(centre).inflate(200))) {
+					if (!secondIds.contains(body.characterId())) continue;
+					// Straight-line distance, as the rule measures it (WorldBlocks.playerNear): a spot under the test platform is far below it.
+					double first = firstSeenStage1.computeIfAbsent(body.characterId(), k -> body.position().distanceTo(player[0].position()));
+					helper.assertTrue(first >= Balance.EMBODIED_RADIUS_BLOCKS, "a survivor appeared " + first + " blocks from a player; age " + body.tickCount + " ticks, now " + distance(body, centre) + " away, player at " + player[0].blockPosition() + " centre " + centre);
+				}
 				if (ticks[0]++ < 100) helper.assertTrue(false, "watching with a player present");
 				level.getServer().getPlayerList().remove(player[0]);
 				CharacterBodies.INSTANCE.resetOriginDistance();
-				bodies(level, centre, secondIds).forEach(Entity::discard);
+				level.getEntitiesOfClass(CharacterEntity.class, new AABB(centre).inflate(200)).stream()
+						.filter(b -> secondIds.contains(b.characterId())).forEach(Entity::discard);
 				releaseChunks(level, centre);
 				return;
 			}
