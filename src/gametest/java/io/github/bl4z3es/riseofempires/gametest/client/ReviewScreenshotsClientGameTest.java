@@ -33,13 +33,15 @@ public final class ReviewScreenshotsClientGameTest implements FabricClientGameTe
 	private static final int SPACING = 80;
 	private static final int SHOT_WIDTH = 1280;
 	private static final int SHOT_HEIGHT = 720;
+	/** Fresh random-seed worlds checked for a dry, level ruin; only the first is photographed. */
+	private static final int RUIN_WORLDS = 3;
 
 	private record Subject(String name, List<int[]> cells, List<BlockPos> world) {}
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
 		context.getInput().resizeWindow(SHOT_WIDTH, SHOT_HEIGHT);
-		generatedRuin(context);
+		for (int i = 0; i < RUIN_WORLDS; i++) generatedRuin(context, i == 0);
 		try (TestSingleplayerContext world = context.worldBuilder().create()) {
 			world.getConnection().waitForChunksRender();
 			var server = world.getServer();
@@ -107,7 +109,7 @@ public final class ReviewScreenshotsClientGameTest implements FabricClientGameTe
 	 * Task M1-09 in a real, normal (not flat) fresh world: the game itself places the Hollow Ruin as the
 	 * chunks around it generate. Checks it stands within the set distance of spawn and photographs it.
 	 */
-	private static void generatedRuin(ClientGameTestContext context) {
+	private static void generatedRuin(ClientGameTestContext context, boolean photograph) {
 		try (TestSingleplayerContext world = context.worldBuilder().setUseConsistentSettings(false).create()) {
 			var server = world.getServer();
 			world.getConnection().waitForChunksRender();
@@ -132,6 +134,17 @@ public final class ReviewScreenshotsClientGameTest implements FabricClientGameTe
 			server.waitFor(s -> RoeServer.get().orElseThrow().state().fact("ruin.built").isPresent(), 2400);
 			int y = server.computeOnServer(s -> Integer.parseInt(RoeServer.get().orElseThrow().state().fact("ruin.y").orElseThrow()));
 			world.getConnection().waitForChunksRender();
+			// No water inside the ruin's walls, at or just below its floor, in the world as generated.
+			int wet = server.computeOnServer(s -> {
+				ServerLevel level = s.overworld();
+				int n = 0;
+				for (int dx = -5; dx <= 5; dx++) for (int dz = -5; dz <= 5; dz++) for (int dy = -2; dy <= 1; dy++) {
+					if (!level.getFluidState(new BlockPos(where[0] + dx, y + dy, where[1] + dz)).isEmpty()) n++;
+				}
+				return n;
+			});
+			if (wet > 0) throw new AssertionError("the Hollow Ruin at " + where[0] + ", " + where[1] + " has " + wet + " water blocks inside it");
+			if (!photograph) return;
 			Structure st = server.computeOnServer(s -> StructureFiles.load(s.getResourceManager(), "hollow_ruin").orElseThrow());
 			List<BlockPos> placed = new ArrayList<>();
 			BlockPos origin = new BlockPos(where[0], y, where[1]);
@@ -144,9 +157,9 @@ public final class ReviewScreenshotsClientGameTest implements FabricClientGameTe
 		}
 	}
 
-	/** The ruin may be moved off water by {@link io.github.bl4z3es.riseofempires.mc.opening.HollowRuin#WATER_SHIFT_BLOCKS}. */
+	/** Rounding of the ruin's spot to whole blocks. */
 	private static final class HollowRuinSlack {
-		static final int BLOCKS = io.github.bl4z3es.riseofempires.mc.opening.HollowRuin.WATER_SHIFT_BLOCKS * 3;
+		static final int BLOCKS = 2;
 	}
 
 	/** Frames a subject from a corner, high enough to see its roof and footprint. */
