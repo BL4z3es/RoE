@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 1,
+	"id": "riseofempires",
+	"version": "${version}",
+	"name": "Rise of Empires",
+	"description": "Turns Minecraft into a grand-strategy game. Climb out of a collapsed realm and become ruler of four.",
+	"authors": [
+		"bl4z3es"
+	],
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.bl4z3es.riseofempires.RiseOfEmpires"
+		],
+		"client": [
+			"io.github.bl4z3es.riseofempires.client.RiseOfEmpiresClient"
+		]
+	},
+	"mixins": [
+		"riseofempires.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

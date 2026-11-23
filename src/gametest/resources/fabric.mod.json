@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "riseofempires-gametest",
+	"version": "0.0.0",
+	"name": "Rise of Empires game tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"io.github.bl4z3es.riseofempires.gametest.BlueprintGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.BuilderGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.CharacterGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.CommandsGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.DeferredEditsGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.FarmerGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.GathererGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.OpeningGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.PerfGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.PersistenceGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.RaidGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.SeasonGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.StarterBuildingsGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.StockpileGameTest",
+			"io.github.bl4z3es.riseofempires.gametest.SurvivorArrivalGameTest"
+		]
+	},
+	"depends": {
+		"riseofempires": "*",
+		"fabric-gametest-api-v1": "*"
+	}
+}

@@ -1,0 +1,10 @@
+{
+	"_note": "PROPOSED. Food value of each item in quarter-meals. A meal is 4; a winter meal is 5.",
+	"quarters": {
+		"minecraft:wheat": 4, "minecraft:bread": 12, "minecraft:carrot": 4, "minecraft:potato": 4,
+		"minecraft:baked_potato": 6, "minecraft:beetroot": 2, "minecraft:apple": 4, "minecraft:cooked_beef": 12,
+		"minecraft:cooked_porkchop": 12, "minecraft:cooked_chicken": 8, "minecraft:cooked_mutton": 8,
+		"minecraft:cooked_cod": 6, "minecraft:cooked_salmon": 8, "minecraft:sweet_berries": 2,
+		"minecraft:melon_slice": 2, "minecraft:pumpkin_pie": 12, "minecraft:mushroom_stew": 8, "minecraft:beetroot_soup": 8
+	}
+}

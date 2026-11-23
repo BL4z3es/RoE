@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "W": "minecraft:wheat",
+    "C": "minecraft:chest",
+    "P": "#minecraft:planks"
+  },
+  "pattern": [
+    "WWW",
+    "WCW",
+    "PPP"
+  ],
+  "result": {
+    "id": "riseofempires:granary_seal"
+  }
+}

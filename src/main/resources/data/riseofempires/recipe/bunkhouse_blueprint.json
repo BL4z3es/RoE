@@ -1,0 +1,11 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"minecraft:paper",
+		"minecraft:white_wool"
+	],
+	"result": {
+		"id": "riseofempires:bunkhouse_blueprint"
+	}
+}

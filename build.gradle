@@ -1,0 +1,132 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+base {
+	archivesName = project.mod_id
+}
+
+repositories {
+	// Loom adds the Minecraft and Fabric repositories itself.
+	// The mod depends on Fabric Loader and Fabric API only (rule E20).
+	// Maven Central is here for test-only libraries, which never ship in the jar.
+	mavenCentral()
+}
+
+loom {
+	// Client-only code lives in src/client so it can never load on a dedicated server (rule E10).
+	splitEnvironmentSourceSets()
+
+	mods {
+		"riseofempires" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+fabricApi {
+	// In-world tests live in src/gametest as a separate test mod and run with ./gradlew runGameTest.
+	configureTests {
+		createSourceSet = true
+		modId = "riseofempires-gametest"
+		enableGameTests = true
+		enableClientGameTests = false
+		eula = true // the owner accepted the Minecraft EULA for dev and test runs
+	}
+}
+
+// Every game-test run starts from a fresh world, so tests never see an earlier run's camps or Ledger.
+def cleanGameTestWorld = tasks.register("cleanGameTestWorld", Delete) {
+	delete layout.buildDirectory.dir("run/gameTest/world")
+}
+tasks.matching { it.name == "runGameTest" }.configureEach { dependsOn cleanGameTestWorld }
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// Test-only: pure-Java tests for core/ (owner decision 2026-11-21). Not shipped.
+	testImplementation platform("org.junit:junit-bom:${project.junit_version}")
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+	useJUnitPlatform()
+}
+
+// Rule E5: core/ is plain Java. Fail the build if core code or core tests name a Minecraft,
+// Mojang or Fabric class, by import or by fully qualified name. Comments are ignored.
+def coreSources = fileTree("src") { include "*/java/**/riseofempires/core/**/*.java" }
+def gameClassPattern = ~/\b(net\.minecraft|com\.mojang|net\.fabricmc)\.[\w.]*/
+def coreCheckMarker = layout.buildDirectory.file("checks/core-is-pure.ok")
+
+def checkCoreIsPure = tasks.register("checkCoreIsPure") {
+	group = "verification"
+	description = "Fails if anything under core/ uses Minecraft, Mojang or Fabric classes (rule E5)."
+	inputs.files(coreSources)
+	outputs.file(coreCheckMarker)
+
+	doLast {
+		def problems = []
+		coreSources.each { file ->
+			def inBlockComment = false
+			file.readLines().eachWithIndex { line, index ->
+				def code = new StringBuilder()
+				int i = 0
+				while (i < line.length()) {
+					if (inBlockComment) {
+						int end = line.indexOf("*/", i)
+						if (end < 0) { i = line.length() } else { inBlockComment = false; i = end + 2 }
+					} else if (line.startsWith("/*", i)) {
+						inBlockComment = true; i += 2
+					} else if (line.startsWith("//", i)) {
+						i = line.length()
+					} else {
+						code.append(line.charAt(i)); i++
+					}
+				}
+				def match = code =~ gameClassPattern
+				if (match.find()) {
+					problems << "  ${file.path}:${index + 1}: uses ${match.group()}"
+				}
+			}
+		}
+		if (!problems.isEmpty()) {
+			throw new GradleException(
+				"core/ must not use Minecraft, Mojang or Fabric classes (rule E5).\n" +
+				problems.join("\n") + "\n" +
+				"Move the code that touches the game into mc/ and pass plain Java values into core/.")
+		}
+		def marker = coreCheckMarker.get().asFile
+		marker.parentFile.mkdirs()
+		marker.text = "ok\n"
+	}
+}
+
+tasks.named("compileJava") { dependsOn checkCoreIsPure }
+tasks.named("compileTestJava") { dependsOn checkCoreIsPure }
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+	// Language fragments are merged into lang/en_us.json by tools/merge_lang.py; they do not ship.
+	exclude "assets/riseofempires/lang-fragments/**"
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 25
+}
+
+java {
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+}

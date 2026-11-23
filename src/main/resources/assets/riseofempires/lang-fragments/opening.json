@@ -1,0 +1,6 @@
+{
+	"item.riseofempires.charter": "The Charter",
+	"item.riseofempires.charter.lore": "Set it on a lectern to found a camp.",
+	"riseofempires.founding.founded": "%s is founded. Keep the fire lit: someone may see it tonight.",
+	"riseofempires.founding.already": "You have already founded %s."
+}

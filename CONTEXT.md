@@ -201,11 +201,21 @@ Effects are clamped per category and applied as Ledger events. With no model, te
 ## 4. Technical foundation `PROPOSED`
 
 - **Loader:** Fabric. The owner plays on Fabric.
-- **Version:** pin the latest stable Minecraft release at task M0-1. For reference, Fabric's announcement for Minecraft 26.2 (June 2026) lists Loom 1.17, Loader 0.19.3 and Gradle 9.5.1, with the Loom plugin id `net.fabricmc.fabric-loom` and the game's own unobfuscated names. Fabric's porting notes point to Java 25 support. Check the Fabric develop page for current numbers before pinning.
+- **Versions** (pinned in M0-1, 2026-11-21, from `meta.fabricmc.net`, the Fabric maven and the official example mod's `26.3` branch; the source of truth is `gradle.properties`):
+
+  | Component | Version |
+  |---|---|
+  | Minecraft | 26.3 (latest stable; 26.4 is in snapshots) |
+  | Fabric Loader | 0.20.1 |
+  | Fabric API | 0.166.2+26.3 |
+  | Fabric Loom | 1.19.4 (plugin id `net.fabricmc.fabric-loom`) |
+  | Gradle | 9.8.2 (the version the 26.3 template ships) |
+  | Java | 25 (required by Minecraft 26.3) |
 - **Navigation:** a server-side pathfinder built on Minecraft's own navigation classes. Baritone is client-side and is not used.
 - **Storage:** Minecraft's saved-data system plus an append-only event log per world.
 - **Model calls:** the JDK's HTTP client to any OpenAI-compatible endpoint. Async only.
-- **Mod id:** `riseofempires`. Java group: placeholder until M0-1. `OPEN`
+- **Mod id:** `riseofempires`. Java group: `io.github.bl4z3es`. `OWNER`
+- **Tests:** JUnit 5 for pure-Java tests, test scope only, never shipped. In-world tests use Fabric API's game-test module. `OWNER`
 
 ---
 
@@ -241,8 +251,8 @@ Starting values. All `PROPOSED`, all untested. Each must exist as a named consta
 3. What counts as winning Act IV: conquest only, or any mix of conquest, vassalage and union.
 4. Goals for Open World and Server modes.
 5. Who pays for model calls in Server mode.
-6. The Java group name and whether the mod id stays `riseofempires`.
-7. Whether test-only libraries are acceptable under the no-dependencies preference.
+6. ~~The Java group name and whether the mod id stays `riseofempires`.~~ Decided 2026-11-21.
+7. ~~Whether test-only libraries are acceptable under the no-dependencies preference.~~ Decided 2026-11-21: JUnit 5 only.
 8. The largest battle size to commit to, after benchmarks exist.
 9. The two inspiration titles that were not captured clearly.
 
@@ -266,3 +276,5 @@ Add a line whenever the owner decides something. Newest last.
 | 2026-11-13 | Difficulty scales with progress. Weaker threats stay visible. | Owner |
 | 2026-11-13 | Six hard rules adopted (see `RULES.md` section 1). | Owner |
 | 2026-11-13 | Full system proposal written by Claude at the owner's request. Everything tagged `PROPOSED` awaits review. | Claude |
+| 2026-11-21 | Java group is `io.github.bl4z3es`. Mod id stays `riseofempires`. | Owner |
+| 2026-11-21 | Test-only libraries are allowed: JUnit 5 only, never shipped in the jar. | Owner |
