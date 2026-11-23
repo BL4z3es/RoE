@@ -1,8 +1,6 @@
 {
-  "parent": "minecraft:block/cube_bottom_top",
+  "parent": "minecraft:block/cube_all",
   "textures": {
-    "top": "minecraft:block/hay_block_top",
-    "side": "minecraft:block/barrel_side",
-    "bottom": "minecraft:block/barrel_bottom"
+    "all": "riseofempires:block/granary_seal"
   }
 }
