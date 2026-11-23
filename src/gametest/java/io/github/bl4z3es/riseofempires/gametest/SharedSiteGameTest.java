@@ -17,14 +17,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
 import java.util.List;
 
 /**
  * Task M1-24: several builders share one build site (rule E3 for building).
  *
- * <p>The same test hut is built twice in one settlement, from the same spot and the same chest:
- * first by one builder, then, after the area is cleared, by two. The two-builder build must take
+ * <p>The same test hut is built twice in one settlement, at two origins the same distance from
+ * the chest: first by one builder, then by two. The two-builder build must take
  * 40&ndash;65% of the one-builder build, and the Ledger's block_built events must name each of the
  * two builders for at least a quarter of the blocks. The finished hut must match the blueprint
  * block for block, in both runs.
@@ -32,8 +31,9 @@ import java.util.List;
 public final class SharedSiteGameTest {
 	/** The test blueprint, 10 blocks: 4 cobblestone, 2 clearings, 4 oak planks. */
 	private static final String TEST_BLUEPRINT = "riseofempires:test_hut";
-	/** Where both builds stand: same spot, so both runs have the same walk to the chest. */
-	private static final BlockPos REL_ORIGIN = new BlockPos(8, 1, 8);
+	/** Both builds stand the same distance from the chest, in separate cleared areas. */
+	private static final BlockPos REL_ORIGIN_ONE = new BlockPos(8, 1, 8);
+	private static final BlockPos REL_ORIGIN_TWO = new BlockPos(24, 1, 8);
 
 	@GameTest(maxTicks = 15_000, padding = 40)
 	public void twoBuildersBuildTwiceAsFastOnOneSite(GameTestHelper helper) {
@@ -50,7 +50,7 @@ public final class SharedSiteGameTest {
 		w.stock(Items.OAK_PLANKS, 16);
 		w.stock(Items.BREAD, 192);
 
-		// stage 0: build with one builder; 1: check it, clear the area; 2: build with two; 3: check both.
+		// stage 0: build with one builder; 1: check it; 2: build with two; 3: check both.
 		int[] stage = {0};
 		BlockPos[] origin = new BlockPos[1];
 		long[] siteId = {-1};
@@ -64,7 +64,7 @@ public final class SharedSiteGameTest {
 
 		helper.succeedWhen(() -> {
 			if (stage[0] == 0) {
-				origin[0] = w.at(REL_ORIGIN);
+				origin[0] = w.at(REL_ORIGIN_ONE.getX(), REL_ORIGIN_ONE.getY(), REL_ORIGIN_ONE.getZ());
 				Building.placeBlueprint(w.state, w.sid, bp, w.place(origin[0]), 0, w.player, now);
 				siteId[0] = Building.activeSite(w.state, w.sid).orElseThrow().id();
 				long builder = w.people.get(0);
@@ -81,15 +81,14 @@ public final class SharedSiteGameTest {
 						+ "; body at " + single[0].position() + " carries " + single[0].carried());
 				ticks[0] = helper.getTick() - started[0];
 				assertMatchesBlueprint(helper, level, origin[0], bp);
-				// Clear the site for the two-builder run of the same blueprint.
 				single[0].discard();
-				clearArea(level, origin[0], bp);
 				stage[0] = 2;
 				helper.assertTrue(false, "one-builder run done in " + ticks[0] + " ticks");
 			}
 			if (stage[0] == 2) {
 				ledgerMark[0] = w.state.ledger().lastId();
-				Building.placeBlueprint(w.state, w.sid, bp, w.place(origin[0]), 0, w.player, now);
+				origin[0] = w.at(REL_ORIGIN_TWO.getX(), REL_ORIGIN_TWO.getY(), REL_ORIGIN_TWO.getZ());
+				Building.placeBlueprint(w.state, w.sid, bp, w.place(origin[0]), 0, w.player, w.roe.now());
 				siteId[0] = Building.activeSite(w.state, w.sid).orElseThrow().id();
 				long a = w.people.get(0);
 				long b = w.people.get(1);
@@ -143,23 +142,6 @@ public final class SharedSiteGameTest {
 			var have = level.getBlockState(p);
 			helper.assertTrue(want.isAir() ? have.isAir() : have.is(want.getBlock()),
 					"wrong block at " + p + ": " + have + " (wanted " + want + ")");
-		}
-	}
-
-	/** Clears the built hut and a margin around it, floor level up. */
-	private static void clearArea(ServerLevel level, BlockPos origin, Blueprint bp) {
-		int minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
-		for (BlueprintBlock b : bp.blocks()) {
-			minX = Math.min(minX, b.dx()); maxX = Math.max(maxX, b.dx());
-			minY = Math.min(minY, b.dy()); maxY = Math.max(maxY, b.dy());
-			minZ = Math.min(minZ, b.dz()); maxZ = Math.max(maxZ, b.dz());
-		}
-		for (int x = minX - 2; x <= maxX + 2; x++) {
-			for (int z = minZ - 2; z <= maxZ + 2; z++) {
-				for (int y = minY; y <= maxY + 2; y++) {
-					level.setBlockAndUpdate(origin.offset(x, y, z), Blocks.AIR.defaultBlockState());
-				}
-			}
 		}
 	}
 }

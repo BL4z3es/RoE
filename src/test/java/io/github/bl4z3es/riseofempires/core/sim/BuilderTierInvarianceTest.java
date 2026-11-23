@@ -29,7 +29,9 @@ import org.junit.jupiter.api.Test;
  *
  * <p>The embodied model derives its per-block time from {@link WorkRates#builderTicksPerBlock},
  * which uses the same Balance constants as the real {@code BuilderJob}. The Ledger tier sums all
- * builders' rates into one credit, so the embodied model must also sum their rates.
+ * builders' rates into one credit, so the embodied model must also sum their rates. Its allowed
+ * difference is 10%, measured over ten seeded worlds (randomness is unseeded in neither tier).
+ * The store is ten blocks from the camp centre in both models, so the carry trip is identical.
  */
 class BuilderTierInvarianceTest {
 	/** Largest allowed relative difference between the two tiers' blocks built. */
@@ -39,7 +41,7 @@ class BuilderTierInvarianceTest {
 	private static final int HOURS = 24; // one in-game day
 	private static final String DIM = "minecraft:overworld";
 	private static final Place CENTRE = new Place(DIM, 0, 64, 0);
-	private static final Place GRANARY = new Place(DIM, 0, 64, 0);
+	private static final Place GRANARY = new Place(DIM, 10, 64, 0);
 
 	/** A simple 4-block wall: two air blocks (free) then two cobblestone blocks (cost items). */
 
@@ -69,8 +71,8 @@ class BuilderTierInvarianceTest {
 			st = st.withResident(cid);
 		}
 		s.put(st, founded);
-		// Stock plenty of materials so the build is never blocked.
-		s.put(Stockpile.empty(sid).withPendingChange("minecraft:cobblestone", 100), founded);
+		// Stock plenty of materials so the build is never blocked: 1,500-block blueprint needs 1,500.
+		s.put(Stockpile.empty(sid).withPendingChange("minecraft:cobblestone", 5_000), founded);
 		return s;
 	}
 
