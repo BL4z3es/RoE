@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Objects;
+import java.util.TreeMap;
 import java.util.TreeMap;
 
 import io.github.bl4z3es.riseofempires.core.ledger.Event;
@@ -32,6 +34,43 @@ public final class Stores {
 		s.put(st.withGranary(where), e);
 		s.noteStockEvent(settlementId, e);
 		return e;
+	}
+
+	/**
+	 * The seal was removed. No event and no state change for a place that is not this camp's granary.
+	 * The world layer first tries to write pending changes into the real chests; whatever it could not
+	 * apply is dropped here and named in the event, rather than silently surviving without a store.
+	 * Existing items in the chests stay there; only the settlement's counted store is cleared.
+	 *
+	 * @param by player, character or null when the game does not know who removed the seal
+	 * @param how how the seal was removed: broken, exploded, piston or replaced
+	 */
+	public static Optional<Event> unsealGranary(SimState s, long settlementId, Place sealPlace, Ref by,
+			String how, long now) {
+		Settlement st = s.settlement(settlementId).orElse(null);
+		if (st == null || !Objects.equals(st.granary(), sealPlace)) return Optional.empty();
+		Stockpile sp = s.stockpile(settlementId);
+		long sealEventId = s.ledger().all().stream()
+				.filter(e -> e.type().equals(EventTypes.GRANARY_SEALED) && sealPlace.equals(e.place())
+						&& e.actors().contains(Ref.settlement(settlementId)))
+				.mapToLong(Event::id).max().orElse(st.foundedEventId());
+		EventDraft d = EventDraft.of(EventTypes.GRANARY_UNSEALED, now).at(sealPlace)
+				.actor(Ref.settlement(settlementId)).cause(sealEventId)
+				.effect(Ref.settlement(settlementId), "granary", "none")
+				.effect(Ref.settlement(settlementId), "seal_removed", how)
+				.effect(Ref.settlement(settlementId), "sealed_by_event", Long.toString(sealEventId))
+				.effect(Ref.settlement(settlementId), "counted_stock", "cleared; items remain in chests");
+		if (by != null) d.actor(by);
+		if (!sp.pending().isEmpty()) {
+			d.effect(Ref.settlement(settlementId), "pending_changes", "dropped_unapplied");
+			sp.pending().forEach((item, delta) -> d.effect(Ref.settlement(settlementId), "dropped_pending " + item,
+					Integer.toString(delta)));
+		}
+		Event e = s.ledger().append(d);
+		s.put(st.withGranary(null), e);
+		s.put(Stockpile.empty(settlementId), e);
+		s.noteStockEvent(settlementId, e);
+		return Optional.of(e);
 	}
 
 	/** The world layer counted the real containers. Writes only if something changed or pending was flushed. */

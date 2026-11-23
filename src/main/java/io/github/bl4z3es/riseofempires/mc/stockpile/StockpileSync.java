@@ -2,11 +2,21 @@ package io.github.bl4z3es.riseofempires.mc.stockpile;
 
 import io.github.bl4z3es.riseofempires.core.model.Settlement;
 import io.github.bl4z3es.riseofempires.core.model.Stockpile;
+import io.github.bl4z3es.riseofempires.core.ledger.Event;
+import io.github.bl4z3es.riseofempires.core.ledger.Place;
+import io.github.bl4z3es.riseofempires.core.ledger.Ref;
 import io.github.bl4z3es.riseofempires.core.sim.Stores;
 import io.github.bl4z3es.riseofempires.mc.RoeServer;
 import io.github.bl4z3es.riseofempires.mc.command.RoeCommands;
+import io.github.bl4z3es.riseofempires.mc.entity.CharacterEntity;
 import java.util.ArrayList;
+import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+
 
 /**
  * Keeps the stockpile and the real chests agreeing (task M1-12, rule E12): counts the chests once a
@@ -46,5 +56,41 @@ public final class StockpileSync implements RoeServer.Module {
 		ServerLevel level = roe.level(s.granary());
 		if (!level.isLoaded(RoeServer.pos(s.granary()))) return;
 		Stores.recount(roe.state(), s.id(), new GranaryStore(level, RoeServer.pos(s.granary())).count(), false, roe.now());
+	}
+
+	/** Called by the seal for every removal, not only player breaking. Idempotent through the core rule. */
+	public static void unseal(RoeServer roe, ServerLevel level, BlockPos pos, Entity breaker, String how) {
+		Place place = RoeServer.place(level, pos);
+		for (Settlement settlement : new ArrayList<>(roe.state().settlements())) {
+			if (!place.equals(settlement.granary())) continue;
+			reconcilePending(roe, settlement);
+			Optional<Event> event = Stores.unsealGranary(
+					roe.state(), settlement.id(), place, breakerRef(breaker), how, roe.now());
+			event.ifPresent(e -> {
+				if (breaker instanceof ServerPlayer player) {
+					player.sendSystemMessage(Component.translatable(
+							"message.riseofempires.granary_unsealed", settlement.name()));
+				}
+			});
+		}
+	}
+
+	/** Try to save off-camera work in the real containers. Nothing changes if any change cannot fit. */
+	private static void reconcilePending(RoeServer roe, Settlement settlement) {
+		Stockpile sp = roe.state().stockpile(settlement.id());
+		if (sp.pending().isEmpty()) return;
+		Place place = settlement.granary();
+		ServerLevel level = roe.level(place);
+		if (!level.isLoaded(RoeServer.pos(place))) return;
+		GranaryStore store = new GranaryStore(level, RoeServer.pos(place));
+		if (!store.apply(sp.pending())) return;
+		Stores.recount(roe.state(), settlement.id(), store.count(), true, roe.now()).orElseThrow(() ->
+				new IllegalStateException("A successful pending flush must write its reconciliation event"));
+	}
+
+	private static Ref breakerRef(Entity breaker) {
+		if (breaker instanceof ServerPlayer player) return Ref.player(player.getStringUUID());
+		if (breaker instanceof CharacterEntity character) return Ref.character(character.characterId());
+		return null;
 	}
 }

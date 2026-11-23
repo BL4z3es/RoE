@@ -2,6 +2,7 @@ package io.github.bl4z3es.riseofempires.core.sim;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -9,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import io.github.bl4z3es.riseofempires.core.ledger.Event;
 import io.github.bl4z3es.riseofempires.core.ledger.EventTypes;
 import io.github.bl4z3es.riseofempires.core.ledger.Place;
+import io.github.bl4z3es.riseofempires.core.ledger.Ref;
 import io.github.bl4z3es.riseofempires.core.model.Plot;
 import io.github.bl4z3es.riseofempires.core.model.SimState;
+import io.github.bl4z3es.riseofempires.core.model.Stockpile;
 
 class StoresTest {
 	private static final Place CENTRE = new Place("overworld", 0, 64, 0);
@@ -87,5 +90,65 @@ class StoresTest {
 		assertEquals(1, s.stockpile(1).total(WHEAT));
 		Event g = Stores.gathered(s, 1, 9, plot, Map.of("minecraft:oak_log", 3), 60);
 		assertEquals(EventTypes.GOODS_GATHERED, g.type());
+	}
+
+	@Test
+	void unsealGranaryRemovesGranaryAndClearsStockpile() {
+		SimState s = camp();
+		Place seal = new Place("overworld", 3, 64, 3);
+		Event sealEvent = Stores.sealGranary(s, 1, seal, "p1", 10);
+		Stores.recount(s, 1, Map.of(WHEAT, 5), false, 20).orElseThrow();
+		assertEquals(5, s.stockpile(1).total(WHEAT));
+
+		Event unseal = Stores.unsealGranary(s, 1, seal, Ref.player("p1"), "broken", 30).orElseThrow();
+		assertEquals(EventTypes.GRANARY_UNSEALED, unseal.type());
+		assertEquals(List.of(sealEvent.id()), unseal.causes());
+		assertTrue(s.settlement(1).orElseThrow().granary() == null);
+		assertEquals(0, s.stockpile(1).total(WHEAT));
+		assertEquals(0, s.stockpile(1).counted().size());
+	}
+
+	@Test
+	void unsealUnknownPlaceIsNoOp() {
+		SimState s = camp();
+		Event sealEvent = Stores.sealGranary(s, 1, new Place("overworld", 3, 64, 3), "p1", 10);
+		Stores.recount(s, 1, Map.of(WHEAT, 2), false, 20).orElseThrow();
+
+		assertTrue(Stores.unsealGranary(s, 1, new Place("overworld", 99, 64, 99), Ref.player("p1"), "broken", 30).isEmpty());
+		assertTrue(Stores.unsealGranary(s, 1, new Place("overworld", 99, 64, 99), null, "exploded", 30).isEmpty());
+		assertEquals(2, s.stockpile(1).total(WHEAT));
+		assertEquals(new Place("overworld", 3, 64, 3), s.settlement(1).orElseThrow().granary());
+	}
+
+	@Test
+	void unsealEventCauseChainReachesSealEvent() {
+		SimState s = camp();
+		Place seal = new Place("overworld", 3, 64, 3);
+		Event sealEvent = Stores.sealGranary(s, 1, seal, "p1", 10);
+		Stores.recount(s, 1, Map.of(WHEAT, 1), false, 20).orElseThrow();
+
+		Event unseal = Stores.unsealGranary(s, 1, seal, Ref.player("p1"), "broken", 30).orElseThrow();
+		List<Event> chain = s.ledger().causeChain(unseal.id());
+		assertTrue(chain.stream().anyMatch(e -> e.id() == sealEvent.id()));
+		assertEquals(sealEvent.id(), unseal.causes().get(0));
+	}
+
+	@Test
+	void unsealDropsPendingChangesWithEffect() {
+		SimState s = camp();
+		Place seal = new Place("overworld", 3, 64, 3);
+		Event sealEvent = Stores.sealGranary(s, 1, seal, "p1", 10);
+		Stores.recount(s, 1, Map.of(WHEAT, 3), false, 20).orElseThrow();
+		// Pending: 2 more wheat from off-camera work
+		s.put(s.stockpile(1).withPendingChange(WHEAT, 2), sealEvent);
+		s.noteStockEvent(1, sealEvent);
+		assertEquals(5, s.stockpile(1).total(WHEAT));
+
+		Event unseal = Stores.unsealGranary(s, 1, seal, null, "exploded", 30).orElseThrow();
+		assertEquals(EventTypes.GRANARY_UNSEALED, unseal.type());
+		boolean hasDroppedEffect = unseal.effects().stream()
+				.anyMatch(e -> e.what().startsWith("dropped_pending ") && e.what().contains(WHEAT) && e.detail().equals("2"));
+		assertTrue(hasDroppedEffect, "missing dropped_pending effect for " + WHEAT);
+		assertEquals(0, s.stockpile(1).total(WHEAT));
 	}
 }
