@@ -91,7 +91,10 @@ public final class RaidGameTest {
 		RaiderEntity raider = RaiderEntity.spawn(level, raidId, floor.south(2));
 		helper.assertTrue(raider != null, "the raider was not created");
 		helper.succeedWhen(() -> {
-			helper.assertTrue(count(chest, Items.WHEAT) == 5, "the chest holds " + count(chest, Items.WHEAT) + " wheat, not 5");
+			helper.assertTrue(count(chest, Items.WHEAT) == 5, "the chest holds " + count(chest, Items.WHEAT) + " wheat, not 5; raider "
+					+ (raider.isAlive() ? "at " + raider.blockPosition() + " (seal " + seal + ") order " + raider.order() + " at target " + raider.ticksAtTarget() : "dead")
+					+ ", raid " + s.raid(raidId).map(r -> r.stage().toString()).orElse("?") + ", embodied " + roe.isEmbodied(RoeServer.place(level, seal))
+					+ ", granary " + s.settlement(sid).map(st -> String.valueOf(st.granary())).orElse("?") + ", tod " + roe.now() % 24_000);
 			helper.assertTrue(count(chest, Items.BREAD) == 2, "the chest holds " + count(chest, Items.BREAD) + " bread, not 2");
 			helper.assertTrue(hasEvent(s, EventTypes.GOODS_STOLEN, Ref.raid(raidId)), "no goods_stolen event");
 			helper.assertTrue(s.raid(raidId).orElseThrow().stage() == RaidStage.ENDED, "the raid has not ended");
