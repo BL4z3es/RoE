@@ -101,6 +101,15 @@ public final class BuilderJob extends WorkJob {
 			for (Iterator<long[]> it = live.values().iterator(); it.hasNext(); ) {
 				if (gameTime - it.next()[1] > CLAIM_LAPSE_TICKS) it.remove();
 			}
+			// One claim per builder per site. A builder asking again (its job may have been made anew,
+			// after a reload or a job change) gets the block it already holds, never a second one,
+			// so no block is left locked by a claim nobody is working.
+			for (Map.Entry<Integer, long[]> e : live.entrySet()) {
+				if (e.getValue()[0] == characterId && !done.get(e.getKey())) {
+					e.getValue()[1] = gameTime;
+					return e.getKey();
+				}
+			}
 			int limit = Math.min(total, placed + CLAIM_MAX_LEAD_BLOCKS);
 			for (int i = placed; i < limit; i++) {
 				if (done.get(i) || live.containsKey(i)) continue;
@@ -131,6 +140,11 @@ public final class BuilderJob extends WorkJob {
 			return c != null && c[0] == characterId;
 		}
 
+		/** Drops a live claim if this builder holds it; a finished block stays done. */
+		void release(int index, long characterId) {
+			if (holds(index, characterId)) live.remove(index);
+		}
+
 		/** Refreshes the heartbeat on a claim its holder is still working on. */
 		void hold(int index, long gameTime) {
 			long[] c = live.get(index);
@@ -146,6 +160,8 @@ public final class BuilderJob extends WorkJob {
 	private BlockState supportWanted;
 	private BlueprintBlock block;
 	private int claimIndex = -1;
+	/** The character this job's claims belong to (set when a claim is taken). */
+	private long heldBy;
 	private String fetchItem;
 	private String missingSaid = "";
 	private int stepping;
@@ -198,7 +214,14 @@ public final class BuilderJob extends WorkJob {
 		return CLAIMS.computeIfAbsent(site.id(), k -> new SiteClaims());
 	}
 
-	private void releaseClaim() { claimIndex = -1; }
+	/** Gives the held block back to the site, so another builder can take it at once rather than after a lapse. */
+	private void releaseClaim() {
+		if (claimIndex >= 0 && site != null) {
+			SiteClaims sc = CLAIMS.get(site.id());
+			if (sc != null) sc.release(claimIndex, heldBy);
+		}
+		claimIndex = -1;
+	}
 
 	// ---- planning: count what already stands, claim the next block, decide to fetch or build
 
@@ -217,6 +240,12 @@ public final class BuilderJob extends WorkJob {
 			advanceAndCount(roe, me);
 			return;
 		}
+		// A builder already holding a claim keeps working it. Claiming again would orphan the held
+		// block, which then stays unbuildable until its claim lapses (CLAIM_LAPSE_TICKS).
+		if (claimIndex >= 0 && claims().holds(claimIndex, me.id()) && !claims().done.get(claimIndex)) {
+			prepareTarget(body, roe, level);
+			return;
+		}
 		// Claim the next block in build order. Without one, hand back what is carried and wait by
 		// the camp centre until a block frees up; the walk keeps the waiting visible.
 		int idx = claims().claim(me.id(), level.getGameTime(), site.placed(), site.total());
@@ -227,6 +256,7 @@ public final class BuilderJob extends WorkJob {
 			return;
 		}
 		claimIndex = idx;
+		heldBy = me.id();
 		prepareTarget(body, roe, level);
 	}
 
