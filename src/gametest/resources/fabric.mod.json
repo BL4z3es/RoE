@@ -21,10 +21,14 @@
 			"io.github.bl4z3es.riseofempires.gametest.StarterBuildingsGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.StockpileGameTest",
 			"io.github.bl4z3es.riseofempires.gametest.SurvivorArrivalGameTest"
+		],
+		"fabric-client-gametest": [
+			"io.github.bl4z3es.riseofempires.gametest.client.ClientSmokeGameTest"
 		]
 	},
 	"depends": {
 		"riseofempires": "*",
-		"fabric-gametest-api-v1": "*"
+		"fabric-gametest-api-v1": "*",
+		"fabric-client-gametest-api-v1": "*"
 	}
 }
