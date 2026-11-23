@@ -44,9 +44,10 @@ public final class GranaryUnsealGameTest {
 		StockpileSync.recountNow(roe, s.settlement(sid).orElseThrow());
 		helper.assertTrue(s.stockpile(sid).total("minecraft:bread") == 10, "expected 10 bread in stockpile");
 
-		// Attribute the break to a real player, using the same hook as vanilla's block-breaking code.
+		// The real player-breaking path: level.destroyBlock calls the player's gameMode, which calls playerWillDestroy.
 		ServerPlayer breaker = helper.makeMockServerPlayerInLevel();
-		helper.getLevel().destroyBlock(helper.absolutePos(sealPos), true, breaker);
+		helper.assertTrue(helper.getLevel().destroyBlock(helper.absolutePos(sealPos), true, breaker),
+				"the mock player could not break the seal");
 
 		helper.succeedWhen(() -> {
 			// The granary is unsealed
@@ -55,13 +56,13 @@ public final class GranaryUnsealGameTest {
 			helper.assertTrue(s.stockpile(sid).totals().isEmpty(), "stockpile still holds items after unseal");
 			// The chest physically still has the bread (law L4: nothing destroyed by the rule)
 			helper.assertTrue(chest.getItem(0).getCount() == 10, "chest bread was destroyed, should remain");
-			// The unseal event exists with correct type
+			// The unseal event exists with the settlement as an actor
 			helper.assertTrue(hasEvent(s, EventTypes.GRANARY_UNSEALED, Ref.settlement(sid)), "no granary_unsealed event");
 			// Cause chain reaches the seal event
 			var unsealEvent = s.ledger().latestOfType(EventTypes.GRANARY_UNSEALED).orElseThrow();
 			var chain = s.ledger().causeChain(unsealEvent.id());
 			helper.assertTrue(chain.stream().anyMatch(e -> e.type().equals(EventTypes.GRANARY_SEALED)), "unseal cause chain missing seal event");
-			// The /roe stockpile command will now say no granary (tested by advice logic)
+			// Player attribution is tested in the unit test; mock player UUID may differ in test env.
 		});
 	}
 

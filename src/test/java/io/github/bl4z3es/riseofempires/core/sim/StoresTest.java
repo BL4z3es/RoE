@@ -134,6 +134,19 @@ class StoresTest {
 	}
 
 	@Test
+	void adviceAsksForGranaryAgainAfterUnseal() {
+		SimState s = new SimState(5);
+		Fixtures.camp(s, 0, 1);
+		Place seal = new Place("minecraft:overworld", 3, 64, 3);
+		Stores.sealGranary(s, 1, seal, "p1", 10);
+		Stores.recount(s, 1, Map.of(WHEAT, 5), false, 20).orElseThrow();
+		assertEquals("advice.farm", Advice.next(s, 1, 0, 20).map(Advice.Line::key).orElse("none"));
+
+		Stores.unsealGranary(s, 1, seal, Ref.player("p1"), "broken", 30).orElseThrow();
+		assertEquals("advice.granary", Advice.next(s, 1, 0, 20).map(Advice.Line::key).orElse("none"));
+	}
+
+	@Test
 	void unsealDropsPendingChangesWithEffect() {
 		SimState s = camp();
 		Place seal = new Place("overworld", 3, 64, 3);
