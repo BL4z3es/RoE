@@ -42,8 +42,8 @@ public final class CharacterBodies implements RoeServer.Module {
 	public static final double ARRIVED_BLOCKS = 6.0;
 	/** How far from a player a new body must be. */
 	private static final int HIDDEN_RADIUS = Balance.EMBODIED_RADIUS_BLOCKS;
-	/** Players farther than this are not checked for line of sight. PROPOSED: not in Balance yet. */
-	private static final double SIGHT_LIMIT_BLOCKS = 128.0;
+	/** Players farther than this are not checked for line of sight. */
+	private static final double SIGHT_LIMIT_BLOCKS = Balance.SIGHT_LIMIT_BLOCKS;
 	/** Extra search distance around a claim when looking for bodies. */
 	private static final int SEARCH_MARGIN_BLOCKS = 128;
 	/** Angles tried per second when looking for a hidden spot. */

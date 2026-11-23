@@ -135,6 +135,13 @@ public final class Balance {
 	/** Raiders guarding the Hollow Ruin. */
 	public static final int RUIN_GUARDS = 2;
 
+	/**
+	 * Players farther than this cannot see a body appear, whatever lies between. Used where survivors and
+	 * raiders are placed. A player-sized body is drawn to about 64 blocks at the default entity distance;
+	 * this allows for twice that. PROPOSED.
+	 */
+	public static final int SIGHT_LIMIT_BLOCKS = 128;
+
 	/** Blocks from the camp where survivors start walking in, beyond sight. */
 	public static final int SURVIVOR_ORIGIN_DISTANCE_BLOCKS = 96;
 	/** Day tick on the first night when survivors set out: dusk. */

@@ -181,11 +181,14 @@ public final class RaidDirector implements RoeServer.Module {
 		return null;
 	}
 
-	/** True if every player is farther than the Embodied radius and has no clear line to the spot. */
+	/** True if every player is farther than the Embodied radius and either beyond the sight limit or with no clear line to the spot. */
 	static boolean hiddenFromEveryPlayer(ServerLevel level, BlockPos p) {
 		Vec3 spot = new Vec3(p.getX() + 0.5, p.getY() + EYE_HEIGHT, p.getZ() + 0.5);
 		for (ServerPlayer player : level.players()) {
 			if (player.distanceToSqr(spot) <= (double) Balance.EMBODIED_RADIUS_BLOCKS * Balance.EMBODIED_RADIUS_BLOCKS) return false;
+			// Past the sight limit nobody sees a body appear. Without this, open ground with a player in camp
+			// had no hidden spot on the raid's line, so no raider ever came and the raid never ended.
+			if (player.distanceToSqr(spot) > (double) Balance.SIGHT_LIMIT_BLOCKS * Balance.SIGHT_LIMIT_BLOCKS) continue;
 			HitResult hit = level.clip(new ClipContext(player.getEyePosition(), spot, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
 			if (hit.getType() == HitResult.Type.MISS) return false;
 		}
