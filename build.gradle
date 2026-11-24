@@ -31,7 +31,7 @@ fabricApi {
 		createSourceSet = true
 		modId = "riseofempires-gametest"
 		enableGameTests = true
-		enableClientGameTests = false
+		enableClientGameTests = true // real-client tests: ./gradlew runClientGameTest, under xvfb-run when headless
 		eula = true // the owner accepted the Minecraft EULA for dev and test runs
 	}
 }

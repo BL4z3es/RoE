@@ -39,6 +39,8 @@ import net.minecraft.world.level.storage.TagValueOutput;
  * <li>A body is made for a character with no player near, walks 13 blocks and puts an item in a chest.
  * <li>Its saved data loads into a new body with the same identity and cargo.
  * <li>At night an idle body walks to a free bed under a roof and sleeps; at dawn it wakes.
+ * <li>At night a survivor still walking to a camp (they set out at dusk) keeps walking: night is only for
+ *     people who belong to a camp.
  * </ol>
  */
 public final class CharacterGameTest {
@@ -138,6 +140,10 @@ public final class CharacterGameTest {
 		// Stage 0: wait for the deposit. Stage 1: reload. Stage 2: night and bed. Stage 3: dawn.
 		int[] stage = {0};
 		CharacterEntity[] body = {first};
+		CharacterEntity[] traveller = {null};
+		// Walks west, away from the beds: a body that took the night off would go east to a bed or stand still.
+		BlockPos travelFrom = new BlockPos(x0 + 8, base.getY() + 1, z0 + 3);
+		BlockPos travelTo = travelFrom.west(7);
 		BlockPos foot = new BlockPos(x0 + 10, base.getY() + 1, z0);
 		helper.succeedWhen(() -> {
 			if (stage[0] == 0) {
@@ -182,6 +188,16 @@ public final class CharacterGameTest {
 					level.setBlockAndUpdate(foot.south(dz).east(), bed.setValue(BedBlock.PART, BedPart.HEAD));
 				}
 				helper.setTime(dayStart + 13_000);
+				// Someone on the road who belongs to no camp yet, as survivors are until they join. A bare
+				// record, not a camp's pending survivor, so no other test's clock can make them arrive.
+				var met = s.ledger().append(io.github.bl4z3es.riseofempires.core.ledger.EventDraft.of("test_traveller", roe.now()));
+				var wanderer = new io.github.bl4z3es.riseofempires.core.model.Character(s.nextId("character"), "Dag", "patient", "a bed",
+						io.github.bl4z3es.riseofempires.core.model.Profession.NONE, List.of(),
+						io.github.bl4z3es.riseofempires.core.model.Needs.MET, io.github.bl4z3es.riseofempires.core.model.Condition.WELL, 0);
+				s.put(wanderer, met);
+				traveller[0] = CharacterEntity.spawn(level, wanderer.id(), travelFrom);
+				helper.assertTrue(traveller[0] != null, "the traveller's body was not created");
+				traveller[0].setJob(t -> t.walkTo(travelTo, 1.0));
 				stage[0] = 2;
 				helper.assertTrue(false, "night scene set");
 			}
@@ -193,6 +209,9 @@ public final class CharacterGameTest {
 								.map(e -> e.characterId() + "@" + e.blockPosition() + (e.isSleeping() ? "z" : "")).toList());
 				helper.assertTrue(b.getSleepingPos().map(p -> p.getX() >= foot.getX() && p.getX() <= foot.getX() + 1
 						&& Math.abs(p.getZ() - foot.getZ()) <= 2 && p.getY() == foot.getY()).orElse(false), "the body sleeps somewhere else");
+				helper.assertTrue(traveller[0].getX() <= travelFrom.getX() - 4, "a survivor still on the road stopped walking at night: at "
+						+ traveller[0].position() + " tod=" + roe.now() % 24_000);
+				traveller[0].discard();
 				helper.setTime(dayStart + 24_000 + 1_000);
 				stage[0] = 3;
 				helper.assertTrue(false, "dawn set");

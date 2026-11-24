@@ -411,7 +411,9 @@ public class CharacterEntity extends PathfinderMob {
 	}
 
 	private void liveStep(ServerLevel level, Condition cond) {
-		if (isNight()) {
+		// Night is for people who belong to a camp. A survivor still walking in (they set out at dusk) has
+		// none yet and keeps walking; before this, they froze where they stood until the walk timed out.
+		if (isNight() && settlement().isPresent()) {
 			nightStep(level);
 			return;
 		}

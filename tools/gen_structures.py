@@ -233,31 +233,53 @@ def hollow_ruin():
 
 
 def founders_tent():
-	"""A 3 x 5 white-wool tent (z 0..4, opening to the north) and a campfire three blocks in front."""
+	"""The founder's camp: an A-frame tent with its entrance to the north, and a campfire in front.
+
+	After common Minecraft tent builds: one upright course of canvas, then a true slope of pale stairs
+	(wool cannot slope) up to a peaked ridge, framed at both ends in spruce with stripped-spruce corner
+	poles; the back is closed in the same canvas. Inside, a bedroll, a barrel of supplies and a lantern
+	hanging from the ridge. In front, a campfire with spruce benches facing it, and a barrel with a
+	lantern on it. Footprint: x -2..2, z -5 (bench) .. 4 (back); dy 0..3.
+	"""
 	g = Grid()
-	wool = "minecraft:white_wool"
-	for x in range(-1, 2):
-		for z in range(-3, 5):
-			for y in range(0, 4):
+	canvas_block, canvas, canvas_slab = "minecraft:smooth_quartz", "minecraft:smooth_quartz_stairs", "minecraft:smooth_quartz_slab"
+	frame_block, frame, frame_slab = "minecraft:spruce_planks", "minecraft:spruce_stairs", "minecraft:spruce_slab"
+	pole = "minecraft:stripped_spruce_log[axis=y]"
+
+	def st(block, facing):
+		return block + "[facing=%s,half=bottom,shape=straight,waterlogged=false]" % facing
+
+	for x in range(-2, 3):
+		for z in range(-5, 5):
+			for y in range(0, 5):
 				g.put(x, y, z, "minecraft:air", AIR)
-	for z in range(1, 5):
-		for x in (-1, 1):
-			for y in (0, 1):
-				g.put(x, y, z, wool)
-	for y in (0, 1):
-		g.put(0, y, 4, wool)
-	for z in range(1, 5):
-		g.put(0, 2, z, wool)
-	# Oak poles at the front frame the opening, with a ridge pole across the top.
-	for x in (-1, 1):
-		for y in (0, 1, 2):
-			g.put(x, y, 0, "minecraft:oak_fence")
-	g.put(0, 2, 0, "minecraft:oak_fence")
-	# Bedroll.
-	g.put(0, 0, 2, "minecraft:red_bed[facing=south,part=foot,occupied=false]")
-	g.put(0, 0, 3, "minecraft:red_bed[facing=south,part=head,occupied=false]", ATTACHED)
-	# Campfire, three blocks in front of the opening.
+	for z in range(0, 5):
+		end = z in (0, 4)
+		block, stairs, slab = (frame_block, frame, frame_slab) if end else (canvas_block, canvas, canvas_slab)
+		# An upright course, then the slope; the high side of each stair points up toward the ridge.
+		g.put(-2, 0, z, pole if end else block)
+		g.put(2, 0, z, pole if end else block)
+		g.put(-2, 1, z, st(stairs, "east"))
+		g.put(2, 1, z, st(stairs, "west"))
+		g.put(-1, 2, z, st(stairs, "east"))
+		g.put(1, 2, z, st(stairs, "west"))
+		g.put(0, 2, z, block)
+		g.put(0, 3, z, slab + "[type=bottom,waterlogged=false]")
+	# The back is closed in the same canvas; the front is open.
+	for (x, y) in ((-1, 0), (0, 0), (1, 0), (-1, 1), (0, 1), (1, 1)):
+		g.put(x, y, 4, canvas_block)
+	# Inside: a bedroll down the middle, a barrel of supplies, a lantern hanging from the ridge.
+	g.put(0, 0, 1, "minecraft:red_bed[facing=south,part=foot,occupied=false]")
+	g.put(0, 0, 2, "minecraft:red_bed[facing=south,part=head,occupied=false]", ATTACHED)
+	g.put(-1, 0, 3, "minecraft:barrel[facing=up,open=false]")
+	g.put(0, 1, 2, "minecraft:lantern[hanging=true,waterlogged=false]", ATTACHED)
+	# The fire, with spruce benches facing it (backs away from the fire), and supplies with a lantern.
 	g.put(0, 0, -3, "minecraft:campfire[facing=south,lit=true,signal_fire=false,waterlogged=false]", ATTACHED)
+	g.put(-2, 0, -3, st(frame, "west"))
+	g.put(2, 0, -3, st(frame, "east"))
+	g.put(0, 0, -5, st(frame, "north"))
+	g.put(2, 0, -1, "minecraft:barrel[facing=up,open=false]")
+	g.put(2, 1, -1, "minecraft:lantern[hanging=false,waterlogged=false]", ATTACHED)
 	return g
 
 

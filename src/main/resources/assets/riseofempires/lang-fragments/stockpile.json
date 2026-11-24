@@ -1,5 +1,6 @@
 {
   "block.riseofempires.granary_seal": "Granary Seal",
   "message.riseofempires.granary_outside_claim": "The Granary Seal must stand inside your camp's claim to name a store. It is placed, but it counts nothing yet.",
-  "message.riseofempires.granary_sealed": "%1$s now keeps its store in the chests within %2$s blocks of this seal."
+  "message.riseofempires.granary_sealed": "%1$s now keeps its store in the chests within %2$s blocks of this seal.",
+  "message.riseofempires.granary_unsealed": "The Granary Seal is gone. %1$s no longer counts those chests as its store. The items remain in the chests."
 }

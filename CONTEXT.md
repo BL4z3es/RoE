@@ -278,3 +278,4 @@ Add a line whenever the owner decides something. Newest last.
 | 2026-11-13 | Full system proposal written by Claude at the owner's request. Everything tagged `PROPOSED` awaits review. | Claude |
 | 2026-11-21 | Java group is `io.github.bl4z3es`. Mod id stays `riseofempires`. | Owner |
 | 2026-11-21 | Test-only libraries are allowed: JUnit 5 only, never shipped in the jar. | Owner |
+| 2026-11-24 | Starter buildings need better roofs; the founder's tent is to be redesigned from reference tent builds, as it was too basic. | Owner |

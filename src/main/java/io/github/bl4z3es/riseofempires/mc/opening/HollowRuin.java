@@ -21,7 +21,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
@@ -45,8 +44,16 @@ public final class HollowRuin implements RoeServer.Module {
 	public static final String STRUCTURE = "hollow_ruin";
 	/** Salt for the dice that choose where the ruin goes. */
 	private static final long DICE_SALT = 101;
-	/** PROPOSED: not in Balance yet. How far the spot moves outward when it falls on water. */
+	/** PROPOSED: not in Balance yet. How far the spot moves outward when its footprint is wet or steep. */
 	public static final int WATER_SHIFT_BLOCKS = 24;
+	/** PROPOSED: not in Balance yet. Most difference in ground height across the footprint. */
+	public static final int MAX_FOOTPRINT_RISE = 3;
+	/** PROPOSED: not in Balance yet. Blocks between ground samples across the footprint. */
+	private static final int FOOTPRINT_SAMPLE_STEP = 3;
+	/** PROPOSED: not in Balance yet. Degrees the search turns when it runs past the farthest allowed distance. */
+	private static final int SEARCH_TURN_DEGREES = 37;
+	/** PROPOSED: not in Balance yet. Spots tried before the ruin settles for one that is merely dry at its centre. */
+	public static final int MAX_SITE_TRIES = 120;
 	/** PROPOSED: not in Balance yet. Most spot changes in one tick before giving up until the next. */
 	private static final int MAX_MOVES_PER_TICK = 40;
 	/** PROPOSED: not in Balance yet. Footprint reach around the centre, west/east, north and south (with the path). */
@@ -162,14 +169,20 @@ public final class HollowRuin implements RoeServer.Module {
 		writePlace(state, level, now, x, z, Optional.empty());
 	}
 
-	/** Fixes the base height from the generator's estimate, or moves the spot out if it is under water. */
+	/**
+	 * Fixes the base height from the generator's estimate once the whole footprint is dry and close to
+	 * level, or moves the spot. A spot is moved outward from spawn; past the farthest allowed distance the
+	 * search turns and starts again at the nearest. After {@link #MAX_SITE_TRIES} spots it accepts one
+	 * whose centre is dry, so a world of ocean still gets its ruin.
+	 */
 	private static void settle(SimState state, ServerLevel level, long now) {
 		int[] xz = place(state);
 		ChunkGenerator gen = level.getChunkSource().getGenerator();
 		var random = level.getChunkSource().randomState();
+		int tries = state.fact("ruin.tries").map(Integer::parseInt).orElse(0);
 		int h = gen.getBaseHeight(xz[0], xz[1], Heightmap.Types.WORLD_SURFACE_WG, level, random);
-		NoiseColumn column = gen.getBaseColumn(xz[0], xz[1], level, random);
-		if (column.getBlock(h - 1).getFluidState().isEmpty()) {
+		boolean centreDry = gen.getBaseColumn(xz[0], xz[1], level, random).getBlock(h - 1).getFluidState().isEmpty();
+		if (footprintFits(level, gen, random, xz[0], xz[1]) || (tries >= MAX_SITE_TRIES && centreDry)) {
 			Event placed = state.ledger().get(Long.parseLong(state.fact("ruin.event").orElseThrow())).orElseThrow();
 			state.putFact("ruin.y", Integer.toString(h), placed);
 			return;
@@ -178,12 +191,40 @@ public final class HollowRuin implements RoeServer.Module {
 		double dx = xz[0] - spawn.getX();
 		double dz = xz[1] - spawn.getZ();
 		double len = Math.max(1.0, Math.hypot(dx, dz));
-		int x = xz[0] + (int) Math.round(dx / len * WATER_SHIFT_BLOCKS);
-		int z = xz[1] + (int) Math.round(dz / len * WATER_SHIFT_BLOCKS);
-		writePlace(state, level, now, x, z, state.fact("ruin.event").map(Long::parseLong));
+		double angle = Math.atan2(dz, dx);
+		double dist = len + WATER_SHIFT_BLOCKS;
+		if (dist > Balance.RUIN_MAX_DISTANCE_BLOCKS) {
+			angle += Math.toRadians(SEARCH_TURN_DEGREES);
+			dist = Balance.RUIN_MIN_DISTANCE_BLOCKS;
+		}
+		int x = spawn.getX() + (int) Math.round(Math.cos(angle) * dist);
+		int z = spawn.getZ() + (int) Math.round(Math.sin(angle) * dist);
+		Event moved = writePlace(state, level, now, x, z, state.fact("ruin.event").map(Long::parseLong));
+		state.putFact("ruin.tries", Integer.toString(tries + 1), moved);
 	}
 
-	private static void writePlace(SimState state, ServerLevel level, long now, int x, int z, Optional<Long> because) {
+	/** True if no ground sample across the footprint is water and the ground rises at most {@link #MAX_FOOTPRINT_RISE}. */
+	private static boolean footprintFits(ServerLevel level, ChunkGenerator gen, net.minecraft.world.level.levelgen.RandomState random, int x, int z) {
+		int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+		for (int ox = -REACH_X; ox <= REACH_X; ox = next(ox, REACH_X)) {
+			for (int oz = -REACH_NORTH; oz <= REACH_SOUTH; oz = next(oz, REACH_SOUTH)) {
+				int h = gen.getBaseHeight(x + ox, z + oz, Heightmap.Types.WORLD_SURFACE_WG, level, random);
+				if (!gen.getBaseColumn(x + ox, z + oz, level, random).getBlock(h - 1).getFluidState().isEmpty()) return false;
+				min = Math.min(min, h);
+				max = Math.max(max, h);
+				if (max - min > MAX_FOOTPRINT_RISE) return false;
+			}
+		}
+		return true;
+	}
+
+	/** The next sample offset: every {@link #FOOTPRINT_SAMPLE_STEP} blocks, always including the far edge. */
+	private static int next(int offset, int edge) {
+		if (offset == edge) return edge + 1;
+		return Math.min(edge, offset + FOOTPRINT_SAMPLE_STEP);
+	}
+
+	private static Event writePlace(SimState state, ServerLevel level, long now, int x, int z, Optional<Long> because) {
 		EventDraft d = EventDraft.of(EventTypes.RUIN_PLACED, now)
 				.at(RoeServer.place(level, new BlockPos(x, level.getSeaLevel(), z)))
 				.actor(Ref.world())
@@ -193,6 +234,7 @@ public final class HollowRuin implements RoeServer.Module {
 		Event e = state.ledger().append(d);
 		state.putFact("ruin.place", x + "," + z, e);
 		state.putFact("ruin.event", Long.toString(e.id()), e);
+		return e;
 	}
 
 	/**

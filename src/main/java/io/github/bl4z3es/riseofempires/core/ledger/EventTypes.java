@@ -13,6 +13,7 @@ public final class EventTypes {
 	public static final String SURVIVOR_JOINED = "survivor_joined";
 	public static final String JOB_ASSIGNED = "job_assigned";
 	public static final String GRANARY_SEALED = "granary_sealed";
+	public static final String GRANARY_UNSEALED = "granary_unsealed";
 	public static final String STOCKPILE_COUNTED = "stockpile_counted";
 	public static final String CROP_HARVESTED = "crop_harvested";
 	public static final String GOODS_DEPOSITED = "goods_deposited";

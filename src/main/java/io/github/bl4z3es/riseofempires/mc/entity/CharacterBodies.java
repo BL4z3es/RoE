@@ -42,12 +42,17 @@ public final class CharacterBodies implements RoeServer.Module {
 	public static final double ARRIVED_BLOCKS = 6.0;
 	/** How far from a player a new body must be. */
 	private static final int HIDDEN_RADIUS = Balance.EMBODIED_RADIUS_BLOCKS;
-	/** Players farther than this are not checked for line of sight. PROPOSED: not in Balance yet. */
-	private static final double SIGHT_LIMIT_BLOCKS = 128.0;
+	/** Players farther than this are not checked for line of sight. */
+	private static final double SIGHT_LIMIT_BLOCKS = Balance.SIGHT_LIMIT_BLOCKS;
 	/** Extra search distance around a claim when looking for bodies. */
 	private static final int SEARCH_MARGIN_BLOCKS = 128;
 	/** Angles tried per second when looking for a hidden spot. */
 	private static final int SPOT_ATTEMPTS = 12;
+	/**
+	 * When no hidden spot is found at the normal distance (open ground, a player in camp), the search
+	 * moves out by this much, ring by ring, until it is past {@link #SIGHT_LIMIT_BLOCKS}. PROPOSED.
+	 */
+	private static final int ARRIVAL_RING_STEP_BLOCKS = 8;
 	/** A walk this many times longer than expected is given up if nobody is watching. PROPOSED. */
 	private static final int STUCK_FACTOR = 3;
 	public static final String ASKS_TO_STAY_KEY = "riseofempires.survivor.asks_to_stay";
@@ -142,18 +147,26 @@ public final class CharacterBodies implements RoeServer.Module {
 		});
 	}
 
+	/**
+	 * Puts a walking survivor's body down out of every player's sight: first at the normal distance, then
+	 * farther out ring by ring. The last ring is past the sight limit, so open ground with a player
+	 * watching from camp still gets its survivors, walking in from farther away.
+	 */
 	private void spawnArrival(ServerLevel level, Settlement st, long id, BlockPos centre) {
-		for (int i = 0; i < SPOT_ATTEMPTS; i++) {
-			double angle = level.getRandom().nextDouble() * Math.PI * 2;
-			int x = centre.getX() + (int) Math.round(Math.cos(angle) * originBlocks);
-			int z = centre.getZ() + (int) Math.round(Math.sin(angle) * originBlocks);
-			if (!level.isPositionEntityTicking(new BlockPos(x, centre.getY(), z))) continue;
-			int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-			BlockPos spot = new BlockPos(x, y, z);
-			if (!level.getFluidState(spot).isEmpty() || !level.getFluidState(spot.below()).isEmpty()) continue;
-			if (hiddenFromEveryone(level, spot)) {
-				CharacterEntity.spawn(level, id, spot);
-				return;
+		int last = (int) SIGHT_LIMIT_BLOCKS + ARRIVAL_RING_STEP_BLOCKS; // the first ring past the sight limit
+		for (int ring = originBlocks; ring <= Math.max(originBlocks, last); ring += ARRIVAL_RING_STEP_BLOCKS) {
+			for (int i = 0; i < SPOT_ATTEMPTS; i++) {
+				double angle = level.getRandom().nextDouble() * Math.PI * 2;
+				int x = centre.getX() + (int) Math.round(Math.cos(angle) * ring);
+				int z = centre.getZ() + (int) Math.round(Math.sin(angle) * ring);
+				if (!level.isPositionEntityTicking(new BlockPos(x, centre.getY(), z))) continue;
+				int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+				BlockPos spot = new BlockPos(x, y, z);
+				if (!level.getFluidState(spot).isEmpty() || !level.getFluidState(spot.below()).isEmpty()) continue;
+				if (hiddenFromEveryone(level, spot)) {
+					CharacterEntity.spawn(level, id, spot);
+					return;
+				}
 			}
 		}
 	}
