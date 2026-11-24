@@ -35,6 +35,8 @@ public final class ReviewScreenshotsClientGameTest implements FabricClientGameTe
 	private static final int SHOT_HEIGHT = 720;
 	/** Fresh random-seed worlds checked for a dry, level ruin; only the first is photographed. */
 	private static final int RUIN_WORLDS = 3;
+	/** Where the camera waits for the ruin: farther than the Embodied radius (48), within the loaded area. */
+	private static final int APPROACH_BLOCKS = 64;
 
 	private record Subject(String name, List<int[]> cells, List<BlockPos> world) {}
 
@@ -87,6 +89,7 @@ public final class ReviewScreenshotsClientGameTest implements FabricClientGameTe
 			for (Subject subject : subjects) {
 				shoot(context, world, subject, +1, "a");
 				shoot(context, world, subject, -1, "b");
+				eyeLevel(context, world, subject);
 			}
 
 			// The mod's items, as the player sees them in the hotbar.
@@ -128,8 +131,9 @@ public final class ReviewScreenshotsClientGameTest implements FabricClientGameTe
 					|| dist > io.github.bl4z3es.riseofempires.core.Balance.RUIN_MAX_DISTANCE_BLOCKS + HollowRuinSlack.BLOCKS) {
 				throw new AssertionError("Hollow Ruin is " + dist + " blocks from spawn");
 			}
-			// Go there: the chunks generate, the ruin is placed into them, then it is photographed.
-			server.runCommand("tp @a " + where[0] + " 200 " + where[1]);
+			// Approach as a player walking up does, stopping beyond the Embodied radius: chunks that were
+			// generated before the spot was chosen get their part only while nobody is that close.
+			server.runCommand("tp @a " + (where[0] + APPROACH_BLOCKS) + " 200 " + where[1]);
 			world.getConnection().waitForChunksRender();
 			server.waitFor(s -> RoeServer.get().orElseThrow().state().fact("ruin.built").isPresent(), 2400);
 			int y = server.computeOnServer(s -> Integer.parseInt(RoeServer.get().orElseThrow().state().fact("ruin.y").orElseThrow()));
@@ -180,6 +184,26 @@ public final class ReviewScreenshotsClientGameTest implements FabricClientGameTe
 		world.getConnection().waitForChunksRender();
 		context.waitTicks(10);
 		context.takeScreenshot(TestScreenshotOptions.of("m1-" + s.name() + "-" + tag));
+	}
+
+	/** As a player standing in front of it sees it: eyes 1.6 above the ground, a few blocks off the front corner. */
+	private static void eyeLevel(ClientGameTestContext context, TestSingleplayerContext world, Subject s) {
+		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
+		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
+		for (BlockPos p : s.world()) {
+			minX = Math.min(minX, p.getX()); maxX = Math.max(maxX, p.getX());
+			minY = Math.min(minY, p.getY()); maxY = Math.max(maxY, p.getY());
+			minZ = Math.min(minZ, p.getZ()); maxZ = Math.max(maxZ, p.getZ());
+		}
+		double cx = (minX + maxX + 1) / 2.0, cz = (minZ + maxZ + 1) / 2.0;
+		double size = Math.max(maxX - minX, maxZ - minZ) + 1;
+		double d = size * 0.9 + 3;
+		double feet = minY + 1;
+		world.getServer().runCommand(String.format(java.util.Locale.ROOT,
+				"tp @a %.2f %.2f %.2f facing %.2f %.2f %.2f", cx + d * 0.45, feet, cz + d, cx, feet + (maxY - minY) * 0.35, cz));
+		world.getConnection().waitForChunksRender();
+		context.waitTicks(10);
+		context.takeScreenshot(TestScreenshotOptions.of("m1-" + s.name() + "-eye"));
 	}
 
 	private static BlockPos ground(ServerLevel level, int x, int z) {

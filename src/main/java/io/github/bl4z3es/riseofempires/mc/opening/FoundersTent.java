@@ -29,8 +29,10 @@ public final class FoundersTent {
 	public static final int SEARCH_RADIUS = 8;
 	/** The nearest the tent origin may be to the lectern. */
 	public static final int MIN_DISTANCE = 3;
-	/** Local tent footprint: x -1..1, z -3 (campfire) .. 4 (back wall). */
-	private static final int Z_MIN = -3;
+	/** Local camp footprint: x -2..2, z -5 (the seat across the fire) .. 4 (back of the tent). Must match founders_tent.json. */
+	private static final int X_MIN = -2;
+	private static final int X_MAX = 2;
+	private static final int Z_MIN = -5;
 	private static final int Z_MAX = 4;
 	private static final String NAME = "founders_tent";
 
@@ -49,6 +51,9 @@ public final class FoundersTent {
 			BlockPos p = positions.poll();
 			BlockState s = states.poll();
 			if (p == null) return true;
+			// The site was cleared when the tent began. Anything standing there now was put there since,
+			// most likely by the player (a chest, a crafting table): the tent goes around it, never over it.
+			if (!level.getBlockState(p).canBeReplaced()) return positions.isEmpty();
 			level.setBlock(p, s, Block.UPDATE_ALL);
 			level.playSound(null, p, s.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 0.8F, 1.0F);
 			return positions.isEmpty();
@@ -136,7 +141,7 @@ public final class FoundersTent {
 	private static int fits(ServerLevel level, BlockPos lectern, int ox, int oz, int turns) {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
-		for (int lx = -1; lx <= 1; lx++) {
+		for (int lx = X_MIN; lx <= X_MAX; lx++) {
 			for (int lz = Z_MIN; lz <= Z_MAX; lz++) {
 				BlockPos c = StructureBuilder.worldPos(new BlockPos(ox, 0, oz), new Structure.Block(lx, 0, lz, ""), turns);
 				if (c.getX() == lectern.getX() && c.getZ() == lectern.getZ()) return Integer.MIN_VALUE;

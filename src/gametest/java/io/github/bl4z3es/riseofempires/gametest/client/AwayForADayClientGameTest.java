@@ -82,14 +82,14 @@ public final class AwayForADayClientGameTest implements FabricClientGameTest {
 				List<Long> people = Survivors.pending(state, sid);
 				for (long id : people) Survivors.join(state, id, sid, now, RoeServer.place(level, lectern));
 				// A granary of two chests: bread to eat, room for the harvest.
-				BlockPos seal = lectern.west(12); // clear of the founder's tent, which goes up around the lectern
+				BlockPos seal = lectern.west(20); // clear of the founder's camp, which may stand up to 13 blocks from the lectern
 				level.setBlockAndUpdate(seal, StockpileBlocks.GRANARY_SEAL.defaultBlockState());
 				level.setBlockAndUpdate(seal.east(), Blocks.CHEST.defaultBlockState());
 				level.setBlockAndUpdate(seal.west(), Blocks.CHEST.defaultBlockState());
 				((Container) level.getBlockEntity(seal.east())).setItem(0, new ItemStack(Items.BREAD, BREAD));
 				Stores.sealGranary(state, sid, RoeServer.place(level, seal), uuid, now);
 				// The farm, placed as a player places it and standing complete, as builders leave it.
-				BlockPos ground = new BlockPos(lectern.getX() - 12, lectern.getY() - 1, lectern.getZ() + 10); // beside the granary, clear of the tent
+				BlockPos ground = new BlockPos(lectern.getX() - 20, lectern.getY() - 1, lectern.getZ() + 10); // beside the granary, clear of the camp
 				var placed = BlueprintPlacement.place(roe, level, ground, uuid, Blueprint.FARM, 0);
 				if (placed.outcome() != BlueprintPlacement.Outcome.PLACED) throw new AssertionError("farm not placed: " + placed.outcome());
 				BuildSite site = Building.activeSite(state, sid).orElseThrow();

@@ -95,6 +95,51 @@ def farm():
 	return p.blocks(((-4, 4), (-4, 4)), 3)
 
 
+# Roofs. Every starter building uses one roof language, after common Minecraft roof guides: a gable
+# at about 45 degrees, stairs whose high side points up the slope, a one-block overhang at the eaves
+# and at the gable ends, a capped ridge, and wooden verges against a stone slope. Walls are four
+# courses: a cobblestone footing, two of plank infill, and an oak beam under the eaves.
+ROOF = "minecraft:stone_brick_stairs"
+ROOF_CAP = "minecraft:stone_brick_slab[type=bottom]"
+RIDGE = "minecraft:stone_bricks"
+TRIM = "minecraft:oak_stairs"
+
+
+def stair(block, facing, half="bottom"):
+	return block + "[facing=" + facing + ",half=" + half + ",shape=straight]"
+
+
+def gable(p, x0, x1, zc, half, eave_y, walls_z):
+	"""A gable roof over walls x0..x1, ridge along x at z = zc, eaves at z = zc +- half, height eave_y.
+
+	Rows rise one block per block inward. The roof runs one block past the gable walls (verges, in oak),
+	the ridge is a stone brick course capped with a slab, and the gable walls are closed under the roof.
+	walls_z: the z values where the gable walls stand (they are filled up to the roof).
+	"""
+	for x in range(x0 - 1, x1 + 2):
+		verge = x in (x0 - 1, x1 + 1)
+		for dz in range(-half, half + 1):
+			z = zc + dz
+			if dz == 0:
+				y = eave_y + half - 1
+				p.put(x, y, z, RIDGE if not verge else "minecraft:oak_planks")
+				p.put(x, y + 1, z, ROOF_CAP if not verge else "minecraft:oak_slab[type=bottom]")
+				continue
+			y = eave_y + half - abs(dz)
+			facing = "south" if dz < 0 else "north"  # the high side points up the slope, toward the ridge
+			p.put(x, y, z, stair(TRIM if verge else ROOF, facing), TRIM if verge else ROOF)
+	# Close the gable ends under the roof: a timber tie beam across the first course, planks above.
+	for x in (x0, x1):
+		for dz in range(-(half - 1), half):
+			z = zc + dz
+			if z not in walls_z:
+				continue
+			top = eave_y + half - 1 if dz == 0 else eave_y + half - abs(dz)
+			for y in range(eave_y + 1, top):
+				p.put(x, y, z, "minecraft:oak_log[axis=z]" if y == eave_y + 1 else PLANKS,
+						"minecraft:oak_log" if y == eave_y + 1 else None)
+
+
 def stable():
 	p = Plan()
 	for x in range(-3, 4):
@@ -104,14 +149,21 @@ def stable():
 	wall = [(x, -3) for x in range(-3, 4)] + [(s, z) for s in (-3, 3) for z in range(-2, 1)]
 	for (x, z) in wall:
 		post = x in (-3, 3) and z in (-3, 0)
-		for dy in (1, 2, 3):
+		for dy in (1, 2, 3, 4):
 			if post:
 				p.put(x, dy, z, LOG)
+			elif dy == 4:
+				beam = "minecraft:oak_log[axis=x]" if z == -3 else "minecraft:oak_log[axis=z]"
+				p.put(x, dy, z, beam, "minecraft:oak_log")
 			else:
 				p.put(x, dy, z, COBBLE if dy == 1 else PLANKS)
-	for x in range(-3, 4):
-		for z in range(-3, 2):
-			p.put(x, 4, z, "minecraft:oak_slab[type=top]")
+	# a header beam over the open front, and a tie beam inside to hang the lantern from
+	for x in range(-2, 3):
+		p.put(x, 4, 0, "minecraft:oak_log[axis=x]", "minecraft:oak_log")
+	for z in (-2, -1):
+		p.put(0, 4, z, "minecraft:oak_log[axis=z]", "minecraft:oak_log")
+	# gable roof over the stalls, ridge along x, its front eave sheltering the pens
+	gable(p, -3, 3, -1, 3, 4, walls_z=range(-3, 1))
 	for x in (-1, 1):
 		for z in (-2, -1):
 			fence(p, x, 1, z)
@@ -129,7 +181,7 @@ def stable():
 	for x in (-2, 2):
 		p.put(x, 1, 3, "minecraft:oak_fence_gate[facing=south,in_wall=false,open=false,powered=false]")
 		p.put(x, 1, 1, "minecraft:hay_block[axis=y]")
-	return p.blocks(((-3, 3), (-3, 3)), 4)
+	return p.blocks(((-4, 4), (-4, 3)), 7)
 
 
 def bunkhouse():
@@ -144,11 +196,14 @@ def bunkhouse():
 			if not (abs(x) == 4 or abs(z) == 3):
 				continue
 			corner = abs(x) == 4 and abs(z) == 3
-			for dy in (1, 2, 3):
+			for dy in (1, 2, 3, 4):
 				if (x, z) == (0, 3) and dy <= 2:
 					continue  # doorway
 				if corner:
 					p.put(x, dy, z, LOG)
+				elif dy == 4:
+					beam = "minecraft:oak_log[axis=x]" if abs(z) == 3 else "minecraft:oak_log[axis=z]"
+					p.put(x, dy, z, beam, "minecraft:oak_log")
 				elif dy == 2 and (x, z) in windows:
 					ns_wall = abs(z) == 3
 					sides = "east=true,north=false,south=false,west=true" if ns_wall else "east=false,north=true,south=true,west=false"
@@ -161,29 +216,14 @@ def bunkhouse():
 	for x in (-3, -1, 1, 3):
 		p.put(x, 1, -2, "minecraft:white_bed[facing=north,part=head,occupied=false]", "minecraft:white_bed")
 		p.put(x, 1, -1, "minecraft:white_bed[facing=north,part=foot,occupied=false]", "")
-	p.put(0, 3, 0, "minecraft:lantern[hanging=true]")
-	# roof: two stepped courses with stairs along the eaves, so nothing is open to the sky
-	for x in range(-4, 5):
-		for z in range(-3, 4):
-			ring = abs(x) == 4 or abs(z) == 3
-			corner = abs(x) == 4 and abs(z) == 3
-			if ring and not corner:
-				facing = "south" if z == 3 else "north" if z == -3 else "east" if x == 4 else "west"
-				p.put(x, 4, z, "minecraft:oak_stairs[facing=" + facing + ",half=bottom,shape=straight]")
-			else:
-				p.put(x, 4, z, PLANKS)
-	for x in range(-3, 4):
+	# tie beams across the hall under an open roof; the lantern hangs from the middle one
+	for x in (-2, 0, 2):
 		for z in range(-2, 3):
-			ring = abs(x) == 3 or abs(z) == 2
-			corner = abs(x) == 3 and abs(z) == 2
-			if ring and not corner:
-				facing = "south" if z == 2 else "north" if z == -2 else "east" if x == 3 else "west"
-				p.put(x, 5, z, "minecraft:oak_stairs[facing=" + facing + ",half=bottom,shape=straight]")
-			elif corner:
-				p.put(x, 5, z, PLANKS)
-			else:
-				p.put(x, 5, z, "minecraft:oak_slab[type=bottom]")
-	return p.blocks(((-4, 4), (-3, 3)), 5)
+			p.put(x, 4, z, "minecraft:oak_log[axis=z]", "minecraft:oak_log")
+	p.put(0, 3, 0, "minecraft:lantern[hanging=true]")
+	# gable roof, ridge along the long side, eaves one block past the walls all round
+	gable(p, -4, 4, 0, 4, 4, walls_z=range(-3, 4))
+	return p.blocks(((-5, 5), (-4, 4)), 8)
 
 
 def main():
